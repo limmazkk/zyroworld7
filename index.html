@@ -2,1759 +2,497 @@
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>ZYRO® | Streetwear</title>
+    <title>ZYRO® | SPORTWEAR</title>
 
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 
     <!-- GOOGLE FONTS -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@300;400;500;700;900&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
     <!-- LEAFLET -->
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    >
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 
 <body>
 
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header>
-
-    <div class="logo">
-
-        <a href="#home">
-
-            <img
-                src="logo1.png"
-                alt="Logo ZYRO"
-            >
-
-        </a>
-
-    </div>
-
-
-    <nav id="menu">
-
-        <a href="#home">INÍCIO</a>
-
-        <a href="#drop">PRODUTOS</a>
-
-        <a href="#about">SOBRE</a>
-
-        <a href="#contact">CONTATO</a>
-
-    </nav>
-
-
-    <div class="icons">
-
-        <button
-            type="button"
-            onclick="abrirLogin()">
-
-            LOGIN
-
-        </button>
-
-
-        <button
-            type="button"
-            class="cart"
-            onclick="abrirCarrinho()">
-
-            CARRINHO
-
-            <span id="cartCount">0</span>
-
-        </button>
-
-
-        <div
-            class="hamburger"
-            onclick="menuMobile()">
-
-            ☰
-
+    <header>
+        <div class="logo">
+            <a href="#home">
+                <img src="logo1.png" alt="Logo ZYRO">
+            </a>
         </div>
 
-    </div>
+        <nav id="menu">
+            <a href="#home">INÍCIO</a>
+            <a href="#drop">PRODUTOS</a>
+            <a href="#about">SOBRE</a>
+            <a href="#contact">CONTATO</a>
+        </nav>
 
-</header>
-
-
-<!-- =====================================================
-     HERO
-===================================================== -->
-
-<section
-    class="hero"
-    id="home">
-
-    <div class="heroText">
-
-        <p class="tag">
-            ZYRO® STREETWEAR
-        </p>
-
-        <h1>
-
-            FEITO PARA QUEM<br>
-
-            TEM UMA<br>
-
-            <span>IDENTIDADE ÚNICA.</span>
-
-        </h1>
-
-        <p class="description">
-            Não foi feito para todos.
-        </p>
-
-        <a
-            href="#drop"
-            class="button">
-
-            VER COLEÇÃO
-
-        </a>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     PRODUTOS
-===================================================== -->
-
-<section id="drop">
-
-    <h2 class="sectionTitle">
-
-        ÚLTIMO <span>DROP</span>
-
-    </h2>
-
-
-    <div class="products">
-
-
-        <!-- =================================================
-             PRODUTO 1
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'CAMISETA BOXY RONALDO',
-                99.90,
-                'camisetaronaldo7.png',
-                'Camiseta streetwear ZYRO em algodão premium.',
-                15
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA BOXY RONALDO',99.90,'camisetaronaldo7.png','Camiseta streetwear ZYRO em algodão premium.',15); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="camisetaronaldo7.png"
-                    alt="CAMISETA BOXY RONALDO"
-                >
-
-                <span class="productTag">
-                    NOVO
-                </span>
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    COLEÇÃO ESSENCIAL
-                </p>
-
-                <h3>
-                    CAMISETA BOXY RONALDO
-                </h3>
-
-                <strong>
-                    R$ 99,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('CAMISETA BOXY RONALDO',99.90,'camisetaronaldo7.png')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
+        <!-- BARRA DE PESQUISA COM DROPDOWN -->
+        <div class="searchBox">
+            <input type="text" id="searchInput" placeholder="BUSCAR PRODUTO..." autocomplete="off">
+            <span class="searchIcon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </span>
+            <!-- LISTA DE RESULTADOS ABAIXO DA PESQUISA -->
+            <div id="searchDropdown" class="searchDropdown"></div>
         </div>
 
-
-        <!-- =================================================
-             PRODUTO 2
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'CAMISETA BOXY DIDICO',
-                99.90,
-                'camisetaadriano.jpg',
-                'Camiseta ZYRO premium com acabamento streetwear.',
-                10
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA BOXY DIDICO',99.90,'camisetaadriano.jpg','Camiseta ZYRO premium com acabamento streetwear.',10); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="camisetaadriano.jpg"
-                    alt="CAMISETA BOXY DIDICO"
-                >
-
-                <span class="productTag">
-                    PREMIUM
-                </span>
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    ESSENTIAL COLLECTION
-                </p>
-
-                <h3>
-                    CAMISETA BOXY DIDICO
-                </h3>
-
-                <strong>
-                    R$ 99,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('CAMISETA BOXY DIDICO',99.90,'camisetaadriano.jpg')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUTO 3
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'CAMISETA ZYRO WORLD',
-                99.90,
-                'camisetaclean.jpg',
-                'Camiseta oversized inspirada na cultura urbana.',
-                20
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA ZYRO WORLD',99.90,'camisetaclean.jpg','Camiseta oversized inspirada na cultura urbana.',20); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="camisetaclean.jpg"
-                    alt="CAMISETA ZYRO WORLD"
-                >
-
-                <span class="productTag">
-                    LIMITED
-                </span>
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    STREET EDITION
-                </p>
-
-                <h3>
-                    CAMISETA ZYRO WORLD
-                </h3>
-
-                <strong>
-                    R$ 99,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('CAMISETA ZYRO WORLD',99.90,'camisetaclean.jpg')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUTO 4
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'CAMISETA WOMAN',
-                99.90,
-                'womancamisa.jpg',
-                'Camiseta urbana ZYRO para completar seu visual.',
-                8
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA WOMAN',99.90,'womancamisa.jpg','Camiseta urbana ZYRO para completar seu visual.',8); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="womancamisa.jpg"
-                    alt="CAMISETA WOMAN"
-                >
-
-                <span class="productTag">
-                    LIMITED
-                </span>
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    URBAN COLLECTION
-                </p>
-
-                <h3>
-                    CAMISETA WOMAN
-                </h3>
-
-                <strong>
-                    R$ 99,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('CAMISETA WOMAN',99.90,'womancamisa.jpg')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUTO 5
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'CAMISETA ARÁBICA',
-                99.90,
-                'arabicavermelha.jpg',
-                'Camiseta ZYRO com identidade urbana e visual marcante.',
-                8
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA ARÁBICA',99.90,'arabicavermelha.jpg','Camiseta ZYRO com identidade urbana e visual marcante.',8); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="arabicavermelha.jpg"
-                    alt="CAMISETA ARÁBICA"
-                >
-
-                <span class="productTag">
-                    LIMITED
-                </span>
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    URBAN COLLECTION
-                </p>
-
-                <h3>
-                    CAMISETA ARÁBICA
-                </h3>
-
-                <strong>
-                    R$ 99,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('CAMISETA ARÁBICA',99.90,'arabicavermelha.jpg')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUTO 6
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'CAMISETA BROCASITO',
-                99.90,
-                'camisetabroca1.jpg',
-                'Camiseta premium ZYRO com visual streetwear.',
-                12
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA BROCASITO',99.90,'camisetabroca1.jpg','Camiseta premium ZYRO com visual streetwear.',12); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="camisetabroca1.jpg"
-                    alt="CAMISETA BROCASITO"
-                >
-
-                <span class="productTag">
-                    NOVO
-                </span>
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    PREMIUM SWEATSHIRT
-                </p>
-
-                <h3>
-                    CAMISETA BROCASITO
-                </h3>
-
-                <strong>
-                    R$ 99,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('CAMISETA BROCASITO',99.90,'camisetabroca1.jpg')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUTO 7
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'Camiseta Smoking',
-                89.90,
-                'smoking.jpg',
-                'Boné ZYRO com design minimalista e urbano.',
-                18
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('ZYRO CAP',89.90,'https://images.unsplash.com/photo-1521369909029-2afed882baee','Boné ZYRO com design minimalista e urbano.',18); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="smoking.jpg"
-                    alt="Camiseta Smoking"
-                >
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    ACCESSORIES
-                </p>
-
-                <h3>
-                    Camiseta Smoking
-                </h3>
-
-                <strong>
-                    R$ 89,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('ZYRO CAP',89.90,'https://images.unsplash.com/photo-1521369909029-2afed882baee')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUTO 8
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'CAMISETA CROWN',
-                99.90,
-                'camisetacoroa.jpg',
-                'Calça cargo oversized com estética urbana.',
-                9
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('ZYRO CARGO',249.90,'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f','Calça cargo oversized com estética urbana.',9); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="camisetacoroa.jpg"
-                    alt="CAMISETA CROWN"
-                >
-
-                <span class="productTag">
-                    STREET
-                </span>
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    STREET EDITION
-                </p>
-
-                <h3>
-                    CAMISETA CROWN
-                </h3>
-
-                <strong>
-                    R$ 99.90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('CAMISETA CROWN',99.90,'camisetacoroa.jpg')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUTO 9
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'ZYRO LONG TEE',
-                169.90,
-                'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab',
-                'Camiseta manga longa ZYRO em algodão premium.',
-                14
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('ZYRO LONG TEE',169.90,'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab','Camiseta manga longa ZYRO em algodão premium.',14); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
-                    alt="ZYRO Long Tee"
-                >
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    ESSENTIAL
-                </p>
-
-                <h3>
-                    ZYRO LONG TEE
-                </h3>
-
-                <strong>
-                    R$ 169,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('ZYRO LONG TEE',169.90,'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUTO 10
-        ================================================== -->
-
-        <div
-            class="card"
-            role="button"
-            tabindex="0"
-            onclick="abrirProduto(
-                'ZYRO TRACK',
-                299.90,
-                'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3',
-                'Jaqueta esportiva ZYRO inspirada no streetwear.',
-                7
-            )"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('ZYRO TRACK',299.90,'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3','Jaqueta esportiva ZYRO inspirada no streetwear.',7); }"
-        >
-
-            <div class="productImage">
-
-                <img
-                    src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3"
-                    alt="ZYRO Track"
-                >
-
-                <span class="productTag">
-                    LIMITED
-                </span>
-
-                <div
-                    class="favorite"
-                    onclick="event.stopPropagation(); favoritar(this)">
-
-                    ♡
-
-                </div>
-
-            </div>
-
-
-            <div class="productInfo">
-
-                <p>
-                    LIMITED EDITION
-                </p>
-
-                <h3>
-                    ZYRO TRACK
-                </h3>
-
-                <strong>
-                    R$ 299,90
-                </strong>
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); addCart('ZYRO TRACK',299.90,'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3')">
-
-                    ADICIONAR
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     BANNER
-===================================================== -->
-
-<section class="banner">
-
-    <div>
-
-        <h2>
-
-            SEJA DIFERENTE<br>
-
-            <span>DO RESTO.</span>
-
-        </h2>
-
-        <p>
-            SEM REGRAS. APENAS IDENTIDADE.
-        </p>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     SOBRE
-===================================================== -->
-
-<section
-    class="about"
-    id="about">
-
-    <h2 class="sectionTitle">
-
-        SOBRE <span>ZYRO</span>
-
-    </h2>
-
-    <p>
-        AUTENTICIDADE NÃO SE COPIA.
-    </p>
-
-</section>
-
-
-<!-- =====================================================
-     CONTATO
-===================================================== -->
-
-<section
-    id="contact"
-    class="about">
-
-    <h2 class="sectionTitle">
-
-        FALE <span>CONOSCO</span>
-
-    </h2>
-
-    <p>
-        ENTRE EM CONTATO COM A ZYRO.
-    </p>
-
-    <p>
-        Instagram: @zyroworld__
-    </p>
-
-</section>
-
-
-<!-- =====================================================
-     MODAL DO PRODUTO
-===================================================== -->
-
-<div
-    class="productModal"
-    id="productModal">
-
-    <div class="productModalBox">
-
-
-        <button
-            type="button"
-            class="closeProduct"
-            onclick="fecharProduto()">
-
-            ×
-
-        </button>
-
-
-        <div class="productDetailImage">
-
-            <img
-                id="detailImage"
-                src=""
-                alt="Produto">
-
-        </div>
-
-
-        <div class="productDetails">
-
-            <p class="detailCategory">
-                ZYRO® STREETWEAR
-            </p>
-
-            <h2 id="detailName">
-                PRODUTO
-            </h2>
-
-            <h3 id="detailPrice">
-                R$ 0,00
-            </h3>
-
-            <p
-                class="detailDescription"
-                id="detailDescription">
-
-                Descrição do produto.
-
-            </p>
-
-
-            <!-- ESTOQUE -->
-
-            <div class="stockArea">
-
-                <span>
-                    ESTOQUE DISPONÍVEL
-                </span>
-
-                <strong id="detailStock">
-                    0 unidades
-                </strong>
-
-            </div>
-
-
-            <!-- TAMANHOS -->
-
-            <div class="sizeArea">
-
-                <h4>
-                    ESCOLHA O TAMANHO
-                </h4>
-
-                <div class="sizes">
-
-                    <button
-                        type="button"
-                        onclick="selecionarTamanho(this)">
-                        PP
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="selecionarTamanho(this)">
-                        P
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="selecionarTamanho(this)">
-                        M
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="selecionarTamanho(this)">
-                        G
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="selecionarTamanho(this)">
-                        GG
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- QUANTIDADE -->
-
-            <div class="quantityArea">
-
-                <h4>
-                    QUANTIDADE
-                </h4>
-
-                <div class="productQuantity">
-
-                    <button
-                        type="button"
-                        onclick="alterarQuantidadeProduto(-1)">
-                        −
-                    </button>
-
-                    <span id="productQuantity">
-                        1
-                    </span>
-
-                    <button
-                        type="button"
-                        onclick="alterarQuantidadeProduto(1)">
-                        +
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- ADICIONAR -->
-
-            <button
-                type="button"
-                class="detailAddButton"
-                onclick="adicionarProdutoDetalhes()">
-
-                ADICIONAR AO CARRINHO
-
+        <div class="icons">
+            <button type="button" id="loginBtn" onclick="abrirLogin()">
+                LOGIN
             </button>
 
+            <button type="button" class="cart" onclick="abrirCarrinho()">
+                CARRINHO
+                <span id="cartCount">0</span>
+            </button>
 
-            <!-- =================================================
-                 FRETE
-            ================================================== -->
+            <div class="hamburger" onclick="menuMobile()">
+                ☰
+            </div>
+        </div>
+    </header>
 
-            <div class="shippingArea">
+    <!-- =====================================================
+         HERO
+    ===================================================== -->
 
-                <h4>
-                    CALCULE O FRETE
-                </h4>
+    <section class="hero" id="home">
+        <div class="heroText">
+            <p class="tag">ZYRO® SPORTWEAR</p>
+            <h1>
+                FEITO PARA QUEM<br>
+                TEM UMA<br>
+                <span>IDENTIDADE ÚNICA.</span>
+            </h1>
+            <p class="description">Não foi feito para todos.</p>
+            <a href="#drop" class="button">VER COLEÇÃO</a>
+        </div>
+    </section>
 
-                <p class="shippingDescription">
-                    Informe seu CEP para calcular o valor e visualizar a localização da entrega.
-                </p>
+    <!-- =====================================================
+         PRODUTOS
+    ===================================================== -->
 
+    <section id="drop">
+        <h2 class="sectionTitle">
+            CAMISETAS <span>DISPONÍVEIS</span>
+        </h2>
 
-                <div class="cepBox">
+        <div class="products" id="productList">
 
-                    <input
-                        type="text"
-                        id="cepInput"
-                        maxlength="9"
-                        inputmode="numeric"
-                        placeholder="Digite seu CEP"
-                    >
-
-                    <button
-                        type="button"
-                        onclick="calcularFrete()">
-
-                        CALCULAR
-
-                    </button>
-
+            <!-- PRODUTO 1 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('CAMISETA BOXY RONALDO', 99.90, 'camisetaronaldo7.png', 'Camiseta streetwear ZYRO em algodão premium.', 15)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA BOXY RONALDO',99.90,'camisetaronaldo7.png','Camiseta streetwear ZYRO em algodão premium.',15); }">
+                <div class="productImage">
+                    <img src="camisetaronaldo7.png" alt="CAMISETA BOXY RONALDO">
+                    <span class="productTag">NOVO</span>
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
                 </div>
-
-
-                <div
-                    id="freteResultado"
-                    class="freteResultado">
+                <div class="productInfo">
+                    <p>COLEÇÃO ESSENCIAL</p>
+                    <h3>CAMISETA BOXY RONALDO</h3>
+                    <strong>R$ 99,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('CAMISETA BOXY RONALDO',99.90,'camisetaronaldo7.png')">ADICIONAR</button>
                 </div>
-
-
-                <!-- MAPA -->
-
-                <div
-                    id="mapaContainer"
-                    class="mapaContainer"
-                    style="display:none;">
-
-                    <div class="mapTitle">
-                        LOCALIZAÇÃO DA ENTREGA
-                    </div>
-
-                    <div id="mapa"></div>
-
-                </div>
-
-
-                <!-- PAGAMENTO -->
-
-                <button
-                    id="irPagamento"
-                    class="paymentRedirectButton"
-                    style="display:none;"
-                    type="button"
-                    onclick="irParaPagamento()">
-
-                    IR PARA PAGAMENTO
-
-                    <span>
-                        →
-                    </span>
-
-                </button>
-
             </div>
 
-
-            <!-- =================================================
-                 PAGAMENTO
-            ================================================== -->
-
-            <div
-                class="paymentArea"
-                id="paymentArea"
-                style="display:none;">
-
-                <div class="paymentHeader">
-
-                    <span>
-                        ZYRO® CHECKOUT
-                    </span>
-
-                    <h3>
-                        PAGAMENTO
-                    </h3>
-
+            <!-- PRODUTO 2 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('CAMISETA ARÁBICA', 99.90, 'arabicavermelha.jpg', 'Camiseta ZYRO com identidade urbana e visual marcante.', 8)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA ARÁBICA',99.90,'arabicavermelha.jpg','Camiseta ZYRO com identidade urbana e visual marcante.',8); }">
+                <div class="productImage">
+                    <img src="arabicavermelha.jpg" alt="CAMISETA ARÁBICA">
+                    <span class="productTag">LIMITED</span>
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
                 </div>
-
-
-                <p class="paymentDescription">
-                    Escolha a forma de pagamento para finalizar seu pedido.
-                </p>
-
-
-                <div class="paymentOptions">
-
-
-                    <!-- PIX -->
-
-                    <label class="paymentOption">
-
-                        <input
-                            type="radio"
-                            name="pagamento"
-                            value="pix"
-                            checked
-                        >
-
-                        <div>
-
-                            <strong>
-                                PIX
-                            </strong>
-
-                            <small>
-                                Aprovação imediata
-                            </small>
-
-                        </div>
-
-                    </label>
-
-
-                    <!-- CARTÃO -->
-
-                    <label class="paymentOption">
-
-                        <input
-                            type="radio"
-                            name="pagamento"
-                            value="cartao"
-                        >
-
-                        <div>
-
-                            <strong>
-                                CARTÃO DE CRÉDITO
-                            </strong>
-
-                            <small>
-                                Visa, Mastercard e outros
-                            </small>
-
-                        </div>
-
-                    </label>
-
-
-                    <!-- BOLETO -->
-
-                    <label class="paymentOption">
-
-                        <input
-                            type="radio"
-                            name="pagamento"
-                            value="boleto"
-                        >
-
-                        <div>
-
-                            <strong>
-                                BOLETO
-                            </strong>
-
-                            <small>
-                                Pagamento bancário
-                            </small>
-
-                        </div>
-
-                    </label>
-
+                <div class="productInfo">
+                    <p>URBAN COLLECTION</p>
+                    <h3>CAMISETA ARÁBICA</h3>
+                    <strong>R$ 99,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('CAMISETA ARÁBICA',99.90,'arabicavermelha.jpg')">ADICIONAR</button>
                 </div>
+            </div>
 
-
-                <!-- PIX -->
-
-                <div
-                    id="pixInfo"
-                    class="paymentInfo">
-
-                    <div class="paymentIcon">
-                        PIX
-                    </div>
-
-                    <h4>
-                        PAGAMENTO VIA PIX
-                    </h4>
-
-                    <p>
-                        O código PIX será disponibilizado após a confirmação do pedido.
-                    </p>
-
+            <!-- PRODUTO 3 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('CAMISETA BOXY DIDICO', 99.90, 'camisetaadriano.jpg', 'Camiseta ZYRO premium com acabamento streetwear.', 10)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA BOXY DIDICO',99.90,'camisetaadriano.jpg','Camiseta ZYRO premium com acabamento streetwear.',10); }">
+                <div class="productImage">
+                    <img src="camisetaadriano.jpg" alt="CAMISETA BOXY DIDICO">
+                    <span class="productTag">PREMIUM</span>
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
                 </div>
-
-
-                <!-- CARTÃO -->
-
-                <div
-                    id="cartaoForm"
-                    class="cardPaymentForm"
-                    style="display:none;">
-
-                    <h4>
-                        DADOS DO CARTÃO
-                    </h4>
-
-                    <input
-                        type="text"
-                        id="numeroCartao"
-                        placeholder="Número do cartão"
-                        maxlength="19"
-                        inputmode="numeric"
-                    >
-
-                    <div class="cardRow">
-
-                        <input
-                            type="text"
-                            id="validadeCartao"
-                            placeholder="Validade"
-                        >
-
-                        <input
-                            type="text"
-                            id="cvvCartao"
-                            placeholder="CVV"
-                            maxlength="4"
-                            inputmode="numeric"
-                        >
-
-                    </div>
-
-                    <input
-                        type="text"
-                        id="nomeCartao"
-                        placeholder="Nome impresso no cartão"
-                    >
-
+                <div class="productInfo">
+                    <p>ESSENTIAL COLLECTION</p>
+                    <h3>CAMISETA BOXY DIDICO</h3>
+                    <strong>R$ 99,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('CAMISETA BOXY DIDICO',99.90,'camisetaadriano.jpg')">ADICIONAR</button>
                 </div>
+            </div>
 
-
-                <!-- BOLETO -->
-
-                <div
-                    id="boletoInfo"
-                    class="paymentInfo"
-                    style="display:none;">
-
-                    <div class="paymentIcon">
-                        BOLETO
-                    </div>
-
-                    <h4>
-                        PAGAMENTO VIA BOLETO
-                    </h4>
-
-                    <p>
-                        O boleto será gerado após a confirmação do pedido.
-                    </p>
-
+            <!-- PRODUTO 4 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('CAMISETA BROCASITO', 99.90, 'camisetabroca1.jpg', 'Camiseta premium ZYRO com visual streetwear.', 12)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA BROCASITO',99.90,'camisetabroca1.jpg','Camiseta premium ZYRO com visual streetwear.',12); }">
+                <div class="productImage">
+                    <img src="camisetabroca1.jpg" alt="CAMISETA BROCASITO">
+                    <span class="productTag">NOVO</span>
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
                 </div>
-
-
-                <!-- RESUMO -->
-
-                <div class="paymentSummary">
-
-                    <div>
-
-                        <span>
-                            Produto
-                        </span>
-
-                        <strong id="paymentProduct">
-                            R$ 0,00
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            Frete
-                        </span>
-
-                        <strong id="paymentShipping">
-                            R$ 0,00
-                        </strong>
-
-                    </div>
-
-
-                    <div class="paymentTotal">
-
-                        <span>
-                            TOTAL
-                        </span>
-
-                        <strong id="paymentTotal">
-                            R$ 0,00
-                        </strong>
-
-                    </div>
-
+                <div class="productInfo">
+                    <p>PREMIUM SWEATSHIRT</p>
+                    <h3>CAMISETA BROCASITO</h3>
+                    <strong>R$ 99,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('CAMISETA BROCASITO',99.90,'camisetabroca1.jpg')">ADICIONAR</button>
                 </div>
+            </div>
 
+            <!-- PRODUTO 5 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('CAMISETA ZYRO WORLD', 99.90, 'camisetaclean.jpg', 'Camiseta oversized inspirada na cultura urbana.', 20)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA ZYRO WORLD',99.90,'camisetaclean.jpg','Camiseta oversized inspirada na cultura urbana.',20); }">
+                <div class="productImage">
+                    <img src="camisetaclean.jpg" alt="CAMISETA ZYRO WORLD">
+                    <span class="productTag">LIMITED</span>
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
+                </div>
+                <div class="productInfo">
+                    <p>STREET EDITION</p>
+                    <h3>CAMISETA ZYRO WORLD</h3>
+                    <strong>R$ 99,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('CAMISETA ZYRO WORLD',99.90,'camisetaclean.jpg')">ADICIONAR</button>
+                </div>
+            </div>
 
-                <button
-                    type="button"
-                    class="detailAddButton"
-                    onclick="finalizarCompra()">
+            <!-- PRODUTO 6 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('CAMISETA SMOKING', 89.90, 'smoking.jpg', 'Camiseta ZYRO com design minimalista e urbano.', 18)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA SMOKING',89.90,'smoking.jpg','Camiseta ZYRO com design minimalista e urbano.',18); }">
+                <div class="productImage">
+                    <img src="smoking.jpg" alt="CAMISETA SMOKING">
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
+                </div>
+                <div class="productInfo">
+                    <p>ACCESSORIES</p>
+                    <h3>CAMISETA SMOKING</h3>
+                    <strong>R$ 89,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('CAMISETA SMOKING',89.90,'smoking.jpg')">ADICIONAR</button>
+                </div>
+            </div>
 
-                    FINALIZAR PEDIDO
+            <!-- PRODUTO 7 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('CAMISETA WOMAN', 99.90, 'womancamisa.jpg', 'Camiseta urbana ZYRO para completar seu visual.', 8)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA WOMAN',99.90,'womancamisa.jpg','Camiseta urbana ZYRO para completar seu visual.',8); }">
+                <div class="productImage">
+                    <img src="womancamisa.jpg" alt="CAMISETA WOMAN">
+                    <span class="productTag">LIMITED</span>
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
+                </div>
+                <div class="productInfo">
+                    <p>URBAN COLLECTION</p>
+                    <h3>CAMISETA WOMAN</h3>
+                    <strong>R$ 99,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('CAMISETA WOMAN',99.90,'womancamisa.jpg')">ADICIONAR</button>
+                </div>
+            </div>
 
-                </button>
+            <!-- PRODUTO 8 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('CAMISETA CROWN', 99.90, 'camisetacoroa.jpg', 'Camiseta ZYRO estampa coroa.', 9)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('CAMISETA CROWN',99.90,'camisetacoroa.jpg','Camiseta ZYRO estampa coroa.',9); }">
+                <div class="productImage">
+                    <img src="camisetacoroa.jpg" alt="CAMISETA CROWN">
+                    <span class="productTag">STREET</span>
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
+                </div>
+                <div class="productInfo">
+                    <p>STREET EDITION</p>
+                    <h3>CAMISETA CROWN</h3>
+                    <strong>R$ 99,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('CAMISETA CROWN',99.90,'camisetacoroa.jpg')">ADICIONAR</button>
+                </div>
+            </div>
 
+            <!-- PRODUTO 9 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('ZYRO LONG TEE', 169.90, 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab', 'Camiseta manga longa ZYRO em algodão premium.', 14)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('ZYRO LONG TEE',169.90,'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab','Camiseta manga longa ZYRO em algodão premium.',14); }">
+                <div class="productImage">
+                    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" alt="ZYRO Long Tee">
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
+                </div>
+                <div class="productInfo">
+                    <p>ESSENTIAL</p>
+                    <h3>ZYRO LONG TEE</h3>
+                    <strong>R$ 169,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('ZYRO LONG TEE',169.90,'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab')">ADICIONAR</button>
+                </div>
+            </div>
+
+            <!-- PRODUTO 10 -->
+            <div class="card" role="button" tabindex="0" onclick="abrirProduto('ZYRO TRACK', 299.90, 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3', 'Jaqueta esportiva ZYRO inspirada no streetwear.', 7)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirProduto('ZYRO TRACK',299.90,'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3','Jaqueta esportiva ZYRO inspirada no streetwear.',7); }">
+                <div class="productImage">
+                    <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3" alt="ZYRO Track">
+                    <span class="productTag">LIMITED</span>
+                    <div class="favorite" onclick="event.stopPropagation(); favoritar(this)">♡</div>
+                </div>
+                <div class="productInfo">
+                    <p>LIMITED EDITION</p>
+                    <h3>ZYRO TRACK</h3>
+                    <strong>R$ 299,90</strong>
+                    <button type="button" onclick="event.stopPropagation(); addCart('ZYRO TRACK',299.90,'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3')">ADICIONAR</button>
+                </div>
             </div>
 
         </div>
+    </section>
 
-    </div>
+    <!-- =====================================================
+         BANNER
+    ===================================================== -->
 
-</div>
+    <section class="banner">
+        <div>
+            <h2>
+                SEJA DIFERENTE<br>
+                <span>DO RESTO.</span>
+            </h2>
+            <p>ENQUANTO ELES SEGUEM A MASSA, NÓS CONTROLAMOS O CAOS. O UNIFORME DA SUA PIOR VERSÃO.</p>
+        </div>
+    </section>
 
+    <!-- =====================================================
+         SOBRE
+    ===================================================== -->
 
-<!-- =====================================================
-     LOGIN
-===================================================== -->
-
-<div
-    class="modal"
-    id="loginModal">
-
-    <div class="modalBox">
-
-        <span onclick="fecharLogin()">
-            ×
-        </span>
-
-        <h2>
-            ENTRAR
+    <section class="about" id="about">
+        <h2 class="sectionTitle">
+            SOBRE <span>ZYRO</span>
         </h2>
+        <p>AUTENTICIDADE NÃO SE COPIA.</p>
+    </section>
 
-        <input
-            type="email"
-            id="loginEmail"
-            placeholder="E-mail">
-
-        <input
-            type="password"
-            id="loginSenha"
-            placeholder="Senha">
-
-        <button
-            type="button"
-            onclick="fazerLogin()">
-
-            ENTRAR
-
-        </button>
-
-        <p onclick="abrirCadastro()">
-            Criar uma conta
+    <!-- =====================================================
+         FALE CONOSCO / CONTATO - ZYRO WORLD®
+    ===================================================== -->
+    <section id="contact" class="about contactSection">
+        <h2 class="sectionTitle">
+            FALE <span>CONOSCO</span>
+        </h2>
+        
+        <p class="villainSlogan">
+            ENQUANTO ELES SEGUEM A MASSA, NÓS CONTROLAMOS O CAOS.<br>
+            <span>O UNIFORME DA SUA PIOR VERSÃO.</span>
         </p>
 
-    </div>
+        <p class="contactSub">CONECTE-SE COM AS SOMBRAS NAS NOSSAS REDES:</p>
 
-</div>
-
-
-<!-- =====================================================
-     CADASTRO
-===================================================== -->
-
-<div
-    class="modal"
-    id="cadastroModal">
-
-    <div class="modalBox">
-
-        <span onclick="fecharCadastro()">
-            ×
-        </span>
-
-        <h2>
-            CRIAR CONTA
-        </h2>
-
-        <input
-            type="text"
-            id="cadastroNome"
-            placeholder="Nome">
-
-        <input
-            type="email"
-            id="cadastroEmail"
-            placeholder="E-mail">
-
-        <input
-            type="password"
-            id="cadastroSenha"
-            placeholder="Senha">
-
-        <button
-            type="button"
-            onclick="criarConta()">
-
-            CRIAR CONTA
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     CARRINHO
-===================================================== -->
-
-<div
-    class="bag"
-    id="cartBox">
-
-    <div class="bagHeader">
-
-        <div>
-
-            <span class="bagLabel">
-                ZYRO® SHOP
-            </span>
-
-            <h2>
-                SEU CARRINHO
-            </h2>
-
-        </div>
-
-        <button
-            type="button"
-            class="closeCart"
-            onclick="fecharCarrinho()">
-
-            ×
-
-        </button>
-
-    </div>
-
-
-    <div
-        id="cartItems"
-        class="cartItems">
-
-        <div class="emptyCart">
-
-            <div class="emptyCartIcon">
-                🛒
-            </div>
-
-            <h3>
-                SEU CARRINHO ESTÁ VAZIO
-            </h3>
-
-            <p>
-                Adicione produtos da coleção ZYRO.
-            </p>
-
-            <a
-                href="#drop"
-                onclick="fecharCarrinho()">
-
-                VER PRODUTOS
-
+        <div class="socialLinks">
+            <!-- INSTAGRAM -->
+            <a href="https://www.instagram.com/zyroworld__" target="_blank" rel="noopener noreferrer" class="socialBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                INSTAGRAM
             </a>
 
+            <!-- TIKTOK -->
+            <a href="https://www.tiktok.com/@zyroworld_?_r=1&_t=ZS-98sp2qRaCqy" target="_blank" rel="noopener noreferrer" class="socialBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                </svg>
+                TIKTOK
+            </a>
         </div>
+    </section>
 
+    <!-- =====================================================
+         MODAL DE LOGIN
+    ===================================================== -->
+
+    <div class="modal" id="loginModal">
+        <div class="modalBox">
+            <button type="button" class="closeModal" onclick="fecharLogin()">×</button>
+            <h2>LOGIN <span>ZYRO®</span></h2>
+            
+            <form id="loginForm" onsubmit="realizarLogin(event)">
+                <input type="email" id="loginEmail" placeholder="E-mail" required>
+                <input type="password" id="loginPassword" placeholder="Senha" required>
+                <button type="submit" class="button">ENTRAR</button>
+            </form>
+        </div>
     </div>
 
+    <!-- =====================================================
+         MODAL DO PRODUTO
+    ===================================================== -->
 
-    <div class="cartSummary">
+    <div class="productModal" id="productModal">
+        <div class="productModalBox">
+            <button type="button" class="closeProduct" onclick="fecharProduto()">×</button>
 
-        <div class="summaryLine">
+            <div class="productDetailImage">
+                <img id="detailImage" src="" alt="Produto">
+            </div>
 
-            <span>
-                Subtotal
-            </span>
+            <div class="productDetails">
+                <p class="detailCategory">ZYRO® STREETWEAR</p>
+                <h2 id="detailName">PRODUTO</h2>
+                <h3 id="detailPrice">R$ 0,00</h3>
+                <p class="detailDescription" id="detailDescription">Descrição do produto.</p>
 
-            <strong>
+                <!-- ESTOQUE -->
+                <div class="stockArea">
+                    <span>ESTOQUE DISPONÍVEL</span>
+                    <strong id="detailStock">0 unidades</strong>
+                </div>
 
-                R$
+                <!-- TAMANHOS -->
+                <div class="sizeArea">
+                    <h4>ESCOLHA O TAMANHO</h4>
+                    <div class="sizes">
+                        <button type="button" onclick="selecionarTamanho(this)">PP</button>
+                        <button type="button" onclick="selecionarTamanho(this)">P</button>
+                        <button type="button" onclick="selecionarTamanho(this)">M</button>
+                        <button type="button" onclick="selecionarTamanho(this)">G</button>
+                        <button type="button" onclick="selecionarTamanho(this)">GG</button>
+                    </div>
+                </div>
 
-                <span id="subtotal">
-                    0,00
-                </span>
+                <!-- QUANTIDADE -->
+                <div class="quantityArea">
+                    <h4>QUANTIDADE</h4>
+                    <div class="productQuantity">
+                        <button type="button" onclick="alterarQuantidadeProduto(-1)">−</button>
+                        <span id="productQuantity">1</span>
+                        <button type="button" onclick="alterarQuantidadeProduto(1)">+</button>
+                    </div>
+                </div>
 
-            </strong>
+                <!-- ADICIONAR -->
+                <button type="button" class="detailAddButton" onclick="adicionarProdutoDetalhes()">
+                    ADICIONAR AO CARRINHO
+                </button>
 
+                <!-- FRETE -->
+                <div class="shippingArea">
+                    <h4>CALCULE O FRETE</h4>
+                    <p class="shippingDescription">
+                        Informe seu CEP para calcular o valor e visualizar a localização da entrega.
+                    </p>
+
+                    <div class="cepBox">
+                        <input type="text" id="cepInput" maxlength="9" inputmode="numeric" placeholder="Digite seu CEP">
+                        <button type="button" onclick="calcularFrete()">CALCULAR</button>
+                    </div>
+
+                    <div id="freteResultado" class="freteResultado"></div>
+
+                    <!-- MAPA -->
+                    <div id="mapaContainer" class="mapaContainer" style="display:none;">
+                        <div class="mapTitle">LOCALIZAÇÃO DA ENTREGA</div>
+                        <div id="mapa"></div>
+                    </div>
+
+                    <!-- PAGAMENTO BTN -->
+                    <button id="irPagamento" class="paymentRedirectButton" style="display:none;" type="button" onclick="irParaPagamento()">
+                        IR PARA PAGAMENTO <span>→</span>
+                    </button>
+                </div>
+
+                <!-- PAGAMENTO -->
+                <div class="paymentArea" id="paymentArea" style="display:none;">
+                    <div class="paymentHeader">
+                        <span>ZYRO® CHECKOUT</span>
+                        <h3>PAGAMENTO</h3>
+                    </div>
+
+                    <p class="paymentDescription">
+                        Escolha a forma de pagamento para finalizar seu pedido.
+                    </p>
+
+                    <div class="paymentOptions">
+                        <!-- PIX -->
+                        <label class="paymentOption">
+                            <input type="radio" name="pagamento" value="pix" checked>
+                            <div>
+                                <strong>PIX</strong>
+                                <small>Aprovação imediata</small>
+                            </div>
+                        </label>
+
+                        <!-- CARTÃO -->
+                        <label class="paymentOption">
+                            <input type="radio" name="pagamento" value="cartao">
+                            <div>
+                                <strong>CARTÃO DE CRÉDITO</strong>
+                                <small>Visa, Mastercard e outros</small>
+                            </div>
+                        </label>
+
+                        <!-- BOLETO -->
+                        <label class="paymentOption">
+                            <input type="radio" name="pagamento" value="boleto">
+                            <div>
+                                <strong>BOLETO</strong>
+                                <small>Pagamento bancário</small>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- PIX INFO -->
+                    <div id="pixInfo" class="paymentInfo">
+                        <div class="paymentIcon">PIX</div>
+                        <h4>PAGAMENTO VIA PIX</h4>
+                        <p>O código PIX será disponibilizado após a confirmação do pedido.</p>
+                    </div>
+
+                    <!-- CARTÃO FORM -->
+                    <div id="cartaoForm" class="cardPaymentForm" style="display:none;">
+                        <h4>DADOS DO CARTÃO</h4>
+                        <input type="text" id="numeroCartao" placeholder="Número do cartão" maxlength="19" inputmode="numeric">
+                        <div class="cardRow">
+                            <input type="text" id="validadeCartao" placeholder="Validade">
+                            <input type="text" id="cvvCartao" placeholder="CVV" maxlength="4" inputmode="numeric">
+                        </div>
+                        <input type="text" id="nomeCartao" placeholder="Nome impresso no cartão">
+                    </div>
+
+                    <!-- BOLETO INFO -->
+                    <div id="boletoInfo" class="paymentInfo" style="display:none;">
+                        <div class="paymentIcon">BOLETO</div>
+                        <h4>PAGAMENTO VIA BOLETO</h4>
+                        <p>O boleto será gerado após a confirmação do pedido.</p>
+                    </div>
+
+                    <!-- RESUMO -->
+                    <div class="paymentSummary">
+                        <div>
+                            <span>Produto</span>
+                            <strong id="paymentProduct">R$ 0,00</strong>
+                        </div>
+                        <div>
+                            <span>Frete</span>
+                            <strong id="paymentShipping">R$ 0,00</strong>
+                        </div>
+                        <hr>
+                        <div>
+                            <span>Total</span>
+                            <strong id="paymentTotal">R$ 0,00</strong>
+                        </div>
+                    </div>
+
+                    <button type="button" class="confirmPaymentButton" onclick="finalizarPedido()">
+                        CONFIRMAR PEDIDO
+                    </button>
+                </div>
+
+            </div>
         </div>
-
-
-        <div class="summaryLine">
-
-            <span>
-                Frete
-            </span>
-
-            <span class="shippingText">
-                Calculado no checkout
-            </span>
-
-        </div>
-
-
-        <div class="summaryTotal">
-
-            <span>
-                TOTAL
-            </span>
-
-            <strong>
-
-                R$
-
-                <span id="total">
-                    0,00
-                </span>
-
-            </strong>
-
-        </div>
-
-
-        <button
-            type="button"
-            class="checkoutButton"
-            onclick="finalizarCompra()">
-
-            FINALIZAR COMPRA
-
-            <span>
-                →
-            </span>
-
-        </button>
-
-
-        <p class="secureText">
-            🔒 Compra segura
-        </p>
-
     </div>
 
-</div>
-
-
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
-<footer>
-
-    <p>
-        © 2026 <b>ZYRO®</b>
-    </p>
-
-    <p>
-        SEM REGRAS. APENAS IDENTIDADE.
-    </p>
-
-    <button
-        type="button"
-        onclick="abrirAdminLogin()"
-        class="adminButton">
-
-        ÁREA DO MODERADOR
-
-    </button>
-
-</footer>
-
-
-<!-- =====================================================
-     LOGIN MODERADOR
-===================================================== -->
-
-<div
-    class="modal"
-    id="adminLoginModal">
-
-    <div class="modalBox">
-
-        <span onclick="fecharAdminLogin()">
-            ×
-        </span>
-
-        <h2>
-            LOGIN DO MODERADOR
-        </h2>
-
-        <input
-            type="text"
-            id="adminUser"
-            placeholder="Usuário">
-
-        <input
-            type="password"
-            id="adminPass"
-            placeholder="Senha">
-
-        <button
-            type="button"
-            onclick="autenticarAdmin()">
-
-            ACESSAR PAINEL
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     CADASTRO DE PRODUTO
-===================================================== -->
-
-<div
-    class="modal"
-    id="addProductModal">
-
-    <div class="modalBox">
-
-        <span onclick="fecharAddProduct()">
-            ×
-        </span>
-
-        <h2>
-            NOVO PRODUTO
-        </h2>
-
-        <input
-            type="text"
-            id="pNome"
-            placeholder="Nome do produto">
-
-        <input
-            type="text"
-            id="pCategoria"
-            placeholder="Coleção">
-
-        <input
-            type="number"
-            id="pPreco"
-            placeholder="Preço"
-            step="0.01">
-
-        <input
-            type="text"
-            id="pImg"
-            placeholder="URL ou nome da imagem">
-
-        <button
-            type="button"
-            onclick="salvarProduto()">
-
-            CADASTRAR PRODUTO
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     LEAFLET
-===================================================== -->
-
-<script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-</script>
-
-
-<!-- =====================================================
-     JAVASCRIPT
-===================================================== -->
-
-<script src="script.js"></script>
-
-
+    <!-- LEAFLET JS & SCRIPT PRINCIPAL -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
