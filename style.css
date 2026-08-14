@@ -376,24 +376,21 @@ section {
 }
 
 
-/* =========================================================
-   CARD
-========================================================= */
-
+/* =====================================================
+   CARDS DE PRODUTOS
+===================================================== */
 .card {
-    position: relative;
-
-    background: transparent;
-
-    border: none;
-
-    cursor: pointer;
-
-    transition: transform .4s ease;
+    background-color: #222222; /* Fundo cinza escuro (estilo streetwear) */
+    border-radius: 16px;       /* Borda arredondada */
+    overflow: hidden;          /* Garante que a imagem respeite as pontas arredondadas */
+    border: 1px solid #333333;  /* Borda sutil para dar acabamento */
+    transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
+/* Efeito ao passar o mouse */
 .card:hover {
     transform: translateY(-5px);
+    border-color: #555555;
 }
 
 
@@ -2176,3 +2173,391 @@ footer b {
     border-radius: 3px;
 }
 
+/* CONTAINER DE FILTRO E PESQUISA NO HEADER */
+.headerFilterContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 10px;
+}
+
+/* SELECT DE CATEGORIAS ESTILIZADO NO HEADER */
+#headerCategorySelect {
+    background: #000;
+    border: 1px solid #222;
+    color: #fff;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    outline: none;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: border-color 0.3s;
+}
+
+#headerCategorySelect:focus,
+#headerCategorySelect:hover {
+    border-color: #fff;
+}
+
+#headerCategorySelect option {
+    background: #000;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+/* CAMPO DE PESQUISA DO HEADER */
+.headerFilterContainer input {
+    background: #000;
+    border: 1px solid #222;
+    color: #fff;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    border-radius: 2px;
+    transition: border-color 0.3s;
+}
+
+.headerFilterContainer input:focus {
+    border-color: #fff;
+}
+
+/* =====================================================
+   SEARCH ULTRA CLEAN (ZYRO)
+===================================================== */
+.searchBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 200px;
+    margin: 0 15px;
+}
+
+.searchBox input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 6px 0;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    outline: none;
+    border-radius: 0;
+    transition: border-color 0.3s ease;
+}
+
+.searchBox input:focus {
+    border-bottom-color: #fff;
+}
+
+.searchBox input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+}
+
+.searchBox .searchIcon {
+    position: absolute;
+    right: 0;
+    color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+}
+
+.searchBox input:focus + .searchIcon {
+    color: #fff;
+}
+
+/* =====================================================
+   FALE CONOSCO (ESTILO ZYRO WORLD®)
+===================================================== */
+.contactSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.contactSection .villainSlogan {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #888;
+    line-height: 1.6;
+    margin: 20px 0;
+    max-width: 600px;
+}
+
+.contactSection .villainSlogan span {
+    color: #fff;
+}
+
+.contactSection .contactSub {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+
+.contactSection .socialLinks {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.contactSection .socialBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contactSection .socialBtn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+    transform: translateY(-2px);
+}
+
+/* =====================================================
+   DROPDOWN DE PESQUISA - ZYRO WORLD®
+===================================================== */
+.searchBox {
+    position: relative;
+}
+
+.searchDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    min-width: 260px;
+    background-color: #0b0b0b;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: none;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none; /* Escondido por padrão */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
+}
+
+.searchDropdown.active {
+    display: block;
+}
+
+/* Item individual da pesquisa */
+.searchItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.searchItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.searchItem img {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.searchItemInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.searchItemInfo strong {
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+}
+
+.searchItemInfo span {
+    color: #888;
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.noResults {
+    padding: 12px;
+    color: #666;
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+/* GARANTE QUE O PARENT PERMITA O DROPDOWN SAIR */
+.searchBox {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/* CAIXA DE RESULTADOS FLUTUANTE */
+.searchDropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 100%;
+    min-width: 250px;
+    background-color: #0d0d0d !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 9999 !important; /* Fica acima do header e dos banners */
+    display: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.9);
+}
+
+.searchDropdown.active {
+    display: block !important;
+}
+
+/* ITEM DA LISTA */
+.searchItem {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    background: #0d0d0d;
+}
+
+.searchItem:hover {
+    background-color: #1a1a1a;
+}
+
+.searchItem img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.searchItemInfo {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.searchItemInfo strong {
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+}
+
+.searchItemInfo span {
+    color: #aaa;
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.noResults {
+    padding: 15px;
+    color: #888;
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+/* CONTAINER DA PESQUISA */
+.searchBox {
+    position: relative;
+}
+
+/* LISTA DROPDOWN */
+.searchDropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    min-width: 260px;
+    background: #141414;
+    border: 1px solid #282828;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+}
+
+/* ITEM DE RESULTADO */
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: #222;
+}
+
+.search-result-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.search-result-item div {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-result-item strong {
+    font-size: 0.8rem;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.search-result-item span {
+    font-size: 0.75rem;
+    color: #ff0033;
+    font-weight: bold;
+}
+
+.search-no-results {
+    padding: 12px;
+    font-size: 0.8rem;
+    color: #777;
+    text-align: center;
+    text-transform: uppercase;
+}
