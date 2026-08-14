@@ -2561,3 +2561,40 @@ footer b {
     text-align: center;
     text-transform: uppercase;
 }
+
+.banner p,
+.banner .frase-destaque {
+    font-size: 0.85rem;   /* Tamanho reduzido */
+    color: #f0f0f0;       /* Cor branca/clara de alto contraste */
+    font-weight: 400;     /* Espessura normal */
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    opacity: 0.95;        /* Quase total transparência para máxima clareza */
+}
+
+/* Ajuste para celular */
+@media (max-width: 768px) {
+    .banner p,
+    .banner .frase-destaque {
+        font-size: 0.75rem;
+    }
+}
+
+/* Estilo para o parágrafo da seção SOBRE */
+.about p {
+    color: #ffffff;        /* Branco puro para máxima clareza */
+    font-size: 0.9rem;     /* Tamanho sutil e proporcional */
+    font-weight: 500;      /* Leve destaque sem pesar */
+    letter-spacing: 1px;   /* Espaçamento clean entre as letras */
+    opacity: 0.95;         /* Mantém a intensidade do tom claro */
+}
+
+/* Ajuste para a descrição no HERO */
+.heroText .description {
+    color: #ffffff;       /* Branco puro para máxima clareza */
+    opacity: 0.95;        /* Mantém o tom bem vivo e legível */
+    font-size: 1rem;       /* Tamanho equilibrado */
+    font-weight: 400;      /* Espessura leve/clean */
+    letter-spacing: 0.5px; /* Espaçamento para visual moderno */
+}
+
