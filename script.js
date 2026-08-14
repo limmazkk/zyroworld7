@@ -1,13 +1,46 @@
-/* =====================================================
-   ZYRO® - SISTEMA PRINCIPAL
-===================================================== */
+/* =========================================================
+   ZYRO® — SISTEMA PRINCIPAL
+   Carrinho + Produtos + Login + Frete + CEP + Mapa
+   + Checkout + Pagamento + Persistência
+========================================================= */
 
 
-/* =====================================================
-   VARIÁVEIS
-===================================================== */
+/* =========================================================
+   CONFIGURAÇÕES
+========================================================= */
 
-let carrinho = [];
+const CONFIG = {
+
+    /* CEP de origem da loja */
+    CEP_ORIGEM: "12345678",
+
+    /* Faixa de frete */
+    FRETE_MINIMO: 12.90,
+    FRETE_MAXIMO: 49.90,
+
+    /* Prazo estimado */
+    PRAZO_MINIMO: 3,
+    PRAZO_MAXIMO: 8,
+
+    /* LocalStorage */
+    CARRINHO_KEY: "zyroCart",
+    USUARIO_KEY: "usuarioZYRO",
+    LOGIN_KEY: "usuarioLogado",
+    FRETE_KEY: "zyroFrete",
+    ENDERECO_KEY: "zyroEndereco"
+
+};
+
+
+/* =========================================================
+   VARIÁVEIS GLOBAIS
+========================================================= */
+
+let carrinho = carregarCarrinho();
+
+let freteAtual = 0;
+
+let enderecoAtual = null;
 
 let produtoAtual = {
     nome: "",
@@ -24,11 +57,13 @@ let quantidadeProduto = 1;
 let mapa = null;
 
 
-/* =====================================================
+/* =========================================================
    FORMATAÇÃO DE PREÇO
-===================================================== */
+========================================================= */
 
 function formatarPreco(valor) {
+
+    valor = Number(valor) || 0;
 
     return valor.toLocaleString("pt-BR", {
         minimumFractionDigits: 2,
@@ -38,9 +73,96 @@ function formatarPreco(valor) {
 }
 
 
-/* =====================================================
+/* =========================================================
+   CONVERTER NÚMERO
+========================================================= */
+
+function converterNumero(valor) {
+
+    if (typeof valor === "number") {
+        return valor;
+    }
+
+    if (!valor) {
+        return 0;
+    }
+
+    let texto = String(valor)
+        .replace(/[^\d,.-]/g, "");
+
+    if (texto.includes(",")) {
+
+        texto = texto
+            .replace(/\./g, "")
+            .replace(",", ".");
+
+    }
+
+    return Number(texto) || 0;
+
+}
+
+
+/* =========================================================
+   CARRINHO
+========================================================= */
+
+function carregarCarrinho() {
+
+    try {
+
+        const salvo = localStorage.getItem(
+            CONFIG.CARRINHO_KEY
+        );
+
+        if (!salvo) {
+            return [];
+        }
+
+        const dados = JSON.parse(salvo);
+
+        return Array.isArray(dados)
+            ? dados
+            : [];
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar carrinho:",
+            erro
+        );
+
+        return [];
+
+    }
+
+}
+
+
+function salvarCarrinho() {
+
+    try {
+
+        localStorage.setItem(
+            CONFIG.CARRINHO_KEY,
+            JSON.stringify(carrinho)
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar carrinho:",
+            erro
+        );
+
+    }
+
+}
+
+
+/* =========================================================
    MENU MOBILE
-===================================================== */
+========================================================= */
 
 function menuMobile() {
 
@@ -53,13 +175,17 @@ function menuMobile() {
 }
 
 
-/* =====================================================
+/* =========================================================
    FAVORITOS
-===================================================== */
+========================================================= */
 
 function favoritar(elemento) {
 
-    if (elemento.classList.contains("favorited")) {
+    if (!elemento) return;
+
+    if (
+        elemento.classList.contains("favorited")
+    ) {
 
         elemento.classList.remove("favorited");
 
@@ -76,49 +202,76 @@ function favoritar(elemento) {
 }
 
 
-/* =====================================================
+/* =========================================================
    ABRIR PRODUTO
-===================================================== */
+========================================================= */
 
-function abrirProduto(nome, preco, imagem, descricao, estoque) {
+function abrirProduto(
+    nome,
+    preco,
+    imagem,
+    descricao,
+    estoque
+) {
 
     produtoAtual = {
-        nome: nome,
-        preco: preco,
-        imagem: imagem,
-        descricao: descricao,
-        estoque: estoque
+
+        nome: nome || "",
+
+        preco: converterNumero(preco),
+
+        imagem: imagem || "",
+
+        descricao: descricao || "",
+
+        estoque: Number(estoque) || 0
+
     };
 
     quantidadeProduto = 1;
 
     tamanhoSelecionado = "";
 
-    const modal = document.getElementById("productModal");
 
-    const detailImage = document.getElementById("detailImage");
+    const modal = document.getElementById(
+        "productModal"
+    );
 
-    const detailName = document.getElementById("detailName");
+    const detailImage = document.getElementById(
+        "detailImage"
+    );
 
-    const detailPrice = document.getElementById("detailPrice");
+    const detailName = document.getElementById(
+        "detailName"
+    );
+
+    const detailPrice = document.getElementById(
+        "detailPrice"
+    );
 
     const detailDescription =
-        document.getElementById("detailDescription");
+        document.getElementById(
+            "detailDescription"
+        );
 
     const detailStock =
-        document.getElementById("detailStock");
+        document.getElementById(
+            "detailStock"
+        );
 
 
     if (detailImage) {
 
-        detailImage.src = imagem;
+        detailImage.src = imagem || "";
+
+        detailImage.alt = nome || "Produto ZYRO";
 
     }
 
 
     if (detailName) {
 
-        detailName.textContent = nome;
+        detailName.textContent = nome || "";
 
     }
 
@@ -126,48 +279,59 @@ function abrirProduto(nome, preco, imagem, descricao, estoque) {
     if (detailPrice) {
 
         detailPrice.textContent =
-            "R$ " + formatarPreco(preco);
+            "R$ " +
+            formatarPreco(
+                produtoAtual.preco
+            );
 
     }
 
 
     if (detailDescription) {
 
-        detailDescription.textContent = descricao;
+        detailDescription.textContent =
+            descricao || "";
 
     }
 
 
     if (detailStock) {
 
-        detailStock.textContent =
-            estoque + " unidades disponíveis";
+        if (produtoAtual.estoque > 0) {
+
+            detailStock.textContent =
+                produtoAtual.estoque +
+                " unidades disponíveis";
+
+        } else {
+
+            detailStock.textContent =
+                "Produto sem estoque";
+
+        }
 
     }
 
 
     const quantidade =
-        document.getElementById("productQuantity");
+        document.getElementById(
+            "productQuantity"
+        );
 
     const quantidade2 =
-        document.getElementById("quantidadeProduto");
+        document.getElementById(
+            "quantidadeProduto"
+        );
 
 
     if (quantidade) {
-
         quantidade.textContent = "1";
-
     }
-
 
     if (quantidade2) {
-
         quantidade2.textContent = "1";
-
     }
 
-
-    /* Remove seleção anterior */
 
     document
         .querySelectorAll(".sizes button")
@@ -187,38 +351,38 @@ function abrirProduto(nome, preco, imagem, descricao, estoque) {
     }
 
 
-    /* Limpa frete */
-
     const frete =
-        document.getElementById("freteResultado");
+        document.getElementById(
+            "freteResultado"
+        );
 
     if (frete) {
-
         frete.innerHTML = "";
-
     }
 
 
     const mapaContainer =
-        document.getElementById("mapaContainer");
+        document.getElementById(
+            "mapaContainer"
+        );
 
     if (mapaContainer) {
-
         mapaContainer.style.display = "none";
-
     }
 
 }
 
 
-/* =====================================================
+/* =========================================================
    FECHAR PRODUTO
-===================================================== */
+========================================================= */
 
 function fecharProduto() {
 
     const modal =
-        document.getElementById("productModal");
+        document.getElementById(
+            "productModal"
+        );
 
     if (modal) {
 
@@ -231,11 +395,13 @@ function fecharProduto() {
 }
 
 
-/* =====================================================
-   TAMANHO
-===================================================== */
+/* =========================================================
+   SELECIONAR TAMANHO
+========================================================= */
 
 function selecionarTamanho(botao) {
+
+    if (!botao) return;
 
     document
         .querySelectorAll(".sizes button")
@@ -248,33 +414,32 @@ function selecionarTamanho(botao) {
 
     botao.classList.add("selected");
 
-
     tamanhoSelecionado =
         botao.textContent.trim();
 
 }
 
 
-/* =====================================================
+/* =========================================================
    QUANTIDADE DO PRODUTO
-===================================================== */
+========================================================= */
 
 function alterarQuantidadeProduto(valor) {
 
     let novaQuantidade =
-        quantidadeProduto + valor;
+        quantidadeProduto +
+        Number(valor);
 
 
     if (novaQuantidade < 1) {
-
         novaQuantidade = 1;
-
     }
 
 
     if (
         produtoAtual.estoque > 0 &&
-        novaQuantidade > produtoAtual.estoque
+        novaQuantidade >
+        produtoAtual.estoque
     ) {
 
         novaQuantidade =
@@ -288,41 +453,67 @@ function alterarQuantidadeProduto(valor) {
 
 
     const campo1 =
-        document.getElementById("productQuantity");
+        document.getElementById(
+            "productQuantity"
+        );
 
     const campo2 =
-        document.getElementById("quantidadeProduto");
+        document.getElementById(
+            "quantidadeProduto"
+        );
 
 
     if (campo1) {
-
         campo1.textContent =
             quantidadeProduto;
-
     }
 
-
     if (campo2) {
-
         campo2.textContent =
             quantidadeProduto;
-
     }
 
 }
 
 
-/* =====================================================
+/* =========================================================
    ADICIONAR PRODUTO DOS CARDS
-===================================================== */
+========================================================= */
 
-function addCart(nome, preco) {
+function addCart(
+    nome,
+    preco,
+    imagem = "",
+    tamanho = "M",
+    estoque = 999
+) {
+
+    preco = converterNumero(preco);
+
+    estoque = Number(estoque) || 999;
+
 
     const produtoExistente =
-        carrinho.find(item => item.nome === nome);
+        carrinho.find(item =>
+            item.nome === nome &&
+            item.tamanho === tamanho
+        );
 
 
     if (produtoExistente) {
+
+        if (
+            produtoExistente.quantidade >=
+            estoque
+        ) {
+
+            alert(
+                "Quantidade máxima disponível em estoque."
+            );
+
+            return;
+
+        }
 
         produtoExistente.quantidade++;
 
@@ -334,16 +525,20 @@ function addCart(nome, preco) {
 
             preco: preco,
 
-            imagem: "",
+            imagem: imagem,
 
-            tamanho: "M",
+            tamanho: tamanho,
 
-            quantidade: 1
+            quantidade: 1,
+
+            estoque: estoque
 
         });
 
     }
 
+
+    salvarCarrinho();
 
     atualizarCarrinho();
 
@@ -352,15 +547,17 @@ function addCart(nome, preco) {
 }
 
 
-/* =====================================================
-   ADICIONAR PRODUTO DA TELA DE DETALHES
-===================================================== */
+/* =========================================================
+   ADICIONAR PRODUTO DOS DETALHES
+========================================================= */
 
 function adicionarProdutoDetalhes() {
 
     if (!produtoAtual.nome) {
 
-        alert("Selecione um produto.");
+        alert(
+            "Selecione um produto."
+        );
 
         return;
 
@@ -369,7 +566,9 @@ function adicionarProdutoDetalhes() {
 
     if (!tamanhoSelecionado) {
 
-        alert("Escolha um tamanho antes de continuar.");
+        alert(
+            "Escolha um tamanho antes de continuar."
+        );
 
         return;
 
@@ -378,7 +577,9 @@ function adicionarProdutoDetalhes() {
 
     if (produtoAtual.estoque <= 0) {
 
-        alert("Produto sem estoque.");
+        alert(
+            "Produto sem estoque."
+        );
 
         return;
 
@@ -394,8 +595,27 @@ function adicionarProdutoDetalhes() {
 
     if (produtoExistente) {
 
-        produtoExistente.quantidade +=
+        const novaQuantidade =
+            produtoExistente.quantidade +
             quantidadeProduto;
+
+
+        if (
+            novaQuantidade >
+            produtoAtual.estoque
+        ) {
+
+            alert(
+                "Quantidade superior ao estoque disponível."
+            );
+
+            return;
+
+        }
+
+
+        produtoExistente.quantidade =
+            novaQuantidade;
 
     } else {
 
@@ -409,55 +629,146 @@ function adicionarProdutoDetalhes() {
 
             tamanho: tamanhoSelecionado,
 
-            quantidade: quantidadeProduto
+            quantidade: quantidadeProduto,
+
+            estoque: produtoAtual.estoque
 
         });
 
     }
 
 
+    salvarCarrinho();
+
     atualizarCarrinho();
 
-
-    alert("Produto adicionado ao carrinho!");
-
+    alert(
+        "Produto adicionado ao carrinho!"
+    );
 
     fecharProduto();
 
 }
 
 
-/* =====================================================
+/* =========================================================
+   SUBTOTAL
+========================================================= */
+
+function calcularSubtotal() {
+
+    return carrinho.reduce(
+        (total, item) => {
+
+            return total +
+                (
+                    Number(item.preco) *
+                    Number(item.quantidade)
+                );
+
+        },
+        0
+    );
+
+}
+
+
+/* =========================================================
+   TOTAL
+========================================================= */
+
+function calcularTotal() {
+
+    return (
+        calcularSubtotal() +
+        Number(freteAtual || 0)
+    );
+
+}
+
+
+/* =========================================================
+   ATUALIZAR VALORES
+========================================================= */
+
+function atualizarValoresFrete() {
+
+    const subtotal =
+        calcularSubtotal();
+
+    const total =
+        calcularTotal();
+
+
+    const subtotalElement =
+        document.getElementById(
+            "subtotal"
+        );
+
+    const freteElement =
+        document.getElementById(
+            "frete"
+        );
+
+    const totalElement =
+        document.getElementById(
+            "total"
+        );
+
+
+    if (subtotalElement) {
+
+        subtotalElement.textContent =
+            formatarPreco(subtotal);
+
+    }
+
+
+    if (freteElement) {
+
+        freteElement.textContent =
+            freteAtual > 0
+                ? "R$ " +
+                  formatarPreco(freteAtual)
+                : "Calcular";
+
+    }
+
+
+    if (totalElement) {
+
+        totalElement.textContent =
+            formatarPreco(total);
+
+    }
+
+}
+
+
+/* =========================================================
    ATUALIZAR CARRINHO
-===================================================== */
+========================================================= */
 
 function atualizarCarrinho() {
 
     const cartItems =
-        document.getElementById("cartItems");
+        document.getElementById(
+            "cartItems"
+        );
 
     const cartCount =
-        document.getElementById("cartCount");
-
-    const subtotalElement =
-        document.getElementById("subtotal");
-
-    const totalElement =
-        document.getElementById("total");
+        document.getElementById(
+            "cartCount"
+        );
 
 
     let quantidadeTotal = 0;
-
-    let subtotal = 0;
 
 
     carrinho.forEach(item => {
 
         quantidadeTotal +=
-            item.quantidade;
-
-        subtotal +=
-            item.preco * item.quantidade;
+            Number(item.quantidade) || 0;
 
     });
 
@@ -470,20 +781,7 @@ function atualizarCarrinho() {
     }
 
 
-    if (subtotalElement) {
-
-        subtotalElement.textContent =
-            formatarPreco(subtotal);
-
-    }
-
-
-    if (totalElement) {
-
-        totalElement.textContent =
-            formatarPreco(subtotal);
-
-    }
+    atualizarValoresFrete();
 
 
     if (!cartItems) return;
@@ -532,8 +830,7 @@ function atualizarCarrinho() {
         const div =
             document.createElement("div");
 
-        div.className =
-            "cartProduct";
+        div.className = "cartProduct";
 
 
         div.innerHTML = `
@@ -543,9 +840,14 @@ function atualizarCarrinho() {
                 ${
                     item.imagem
                     ?
-                    `<img src="${item.imagem}" alt="${item.nome}">`
+                    `<img
+                        src="${item.imagem}"
+                        alt="${item.nome}"
+                    >`
                     :
-                    `<div class="noImage">ZYRO</div>`
+                    `<div class="noImage">
+                        ZYRO
+                    </div>`
                 }
 
             </div>
@@ -569,7 +871,13 @@ function atualizarCarrinho() {
                 <div class="cartQuantity">
 
                     <button
-                        onclick="alterarQuantidadeCarrinho(${index}, -1)">
+                        type="button"
+                        onclick="
+                            alterarQuantidadeCarrinho(
+                                ${index},
+                                -1
+                            )
+                        ">
 
                         −
 
@@ -582,7 +890,13 @@ function atualizarCarrinho() {
 
 
                     <button
-                        onclick="alterarQuantidadeCarrinho(${index}, 1)">
+                        type="button"
+                        onclick="
+                            alterarQuantidadeCarrinho(
+                                ${index},
+                                1
+                            )
+                        ">
 
                         +
 
@@ -592,8 +906,11 @@ function atualizarCarrinho() {
 
 
                 <button
+                    type="button"
                     class="removeCart"
-                    onclick="removerProduto(${index})">
+                    onclick="
+                        removerProduto(${index})
+                    ">
 
                     REMOVER
 
@@ -611,88 +928,120 @@ function atualizarCarrinho() {
 }
 
 
-/* =====================================================
-   ALTERAR QUANTIDADE NO CARRINHO
-===================================================== */
+/* =========================================================
+   ALTERAR QUANTIDADE DO CARRINHO
+========================================================= */
 
-function alterarQuantidadeCarrinho(index, valor) {
+function alterarQuantidadeCarrinho(
+    index,
+    valor
+) {
 
     if (!carrinho[index]) return;
 
 
-    carrinho[index].quantidade += valor;
+    const novaQuantidade =
+        Number(carrinho[index].quantidade) +
+        Number(valor);
 
 
-    if (carrinho[index].quantidade <= 0) {
+    if (novaQuantidade <= 0) {
 
         carrinho.splice(index, 1);
+
+    } else {
+
+        if (
+            carrinho[index].estoque &&
+            novaQuantidade >
+            carrinho[index].estoque
+        ) {
+
+            alert(
+                "Quantidade máxima disponível em estoque."
+            );
+
+            return;
+
+        }
+
+
+        carrinho[index].quantidade =
+            novaQuantidade;
 
     }
 
 
+    salvarCarrinho();
+
     atualizarCarrinho();
 
 }
 
 
-/* =====================================================
+/* =========================================================
    REMOVER PRODUTO
-===================================================== */
+========================================================= */
 
 function removerProduto(index) {
 
+    if (!carrinho[index]) return;
+
     carrinho.splice(index, 1);
+
+    salvarCarrinho();
 
     atualizarCarrinho();
 
 }
 
 
-/* =====================================================
+/* =========================================================
    ABRIR CARRINHO
-===================================================== */
+========================================================= */
 
 function abrirCarrinho() {
 
     const cartBox =
-        document.getElementById("cartBox");
-
+        document.getElementById(
+            "cartBox"
+        );
 
     if (!cartBox) return;
-
 
     cartBox.classList.add("active");
 
 }
 
 
-/* =====================================================
+/* =========================================================
    FECHAR CARRINHO
-===================================================== */
+========================================================= */
 
 function fecharCarrinho() {
 
     const cartBox =
-        document.getElementById("cartBox");
-
+        document.getElementById(
+            "cartBox"
+        );
 
     if (!cartBox) return;
-
 
     cartBox.classList.remove("active");
 
 }
 
 
-/* =====================================================
+/* =========================================================
    LOGIN
-===================================================== */
+========================================================= */
 
 function abrirLogin() {
 
     const modal =
-        document.getElementById("loginModal");
-
+        document.getElementById(
+            "loginModal"
+        );
 
     if (modal) {
 
@@ -706,8 +1055,9 @@ function abrirLogin() {
 function fecharLogin() {
 
     const modal =
-        document.getElementById("loginModal");
-
+        document.getElementById(
+            "loginModal"
+        );
 
     if (modal) {
 
@@ -718,18 +1068,18 @@ function fecharLogin() {
 }
 
 
-/* =====================================================
+/* =========================================================
    CADASTRO
-===================================================== */
+========================================================= */
 
 function abrirCadastro() {
 
     fecharLogin();
 
-
     const modal =
-        document.getElementById("cadastroModal");
-
+        document.getElementById(
+            "cadastroModal"
+        );
 
     if (modal) {
 
@@ -743,8 +1093,9 @@ function abrirCadastro() {
 function fecharCadastro() {
 
     const modal =
-        document.getElementById("cadastroModal");
-
+        document.getElementById(
+            "cadastroModal"
+        );
 
     if (modal) {
 
@@ -755,25 +1106,71 @@ function fecharCadastro() {
 }
 
 
-/* =====================================================
+/* =========================================================
    CRIAR CONTA
-===================================================== */
+========================================================= */
 
 function criarConta() {
 
+    const nomeElement =
+        document.getElementById(
+            "cadastroNome"
+        );
+
+    const emailElement =
+        document.getElementById(
+            "cadastroEmail"
+        );
+
+    const senhaElement =
+        document.getElementById(
+            "cadastroSenha"
+        );
+
+
+    if (
+        !nomeElement ||
+        !emailElement ||
+        !senhaElement
+    ) {
+
+        alert(
+            "Formulário de cadastro não encontrado."
+        );
+
+        return;
+
+    }
+
+
     const nome =
-        document.getElementById("cadastroNome").value.trim();
+        nomeElement.value.trim();
 
     const email =
-        document.getElementById("cadastroEmail").value.trim();
+        emailElement.value.trim().toLowerCase();
 
     const senha =
-        document.getElementById("cadastroSenha").value;
+        senhaElement.value;
 
 
     if (!nome || !email || !senha) {
 
-        alert("Preencha todos os campos.");
+        alert(
+            "Preencha todos os campos."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
+
+        alert(
+            "Digite um e-mail válido."
+        );
 
         return;
 
@@ -782,7 +1179,9 @@ function criarConta() {
 
     if (senha.length < 6) {
 
-        alert("A senha precisa ter pelo menos 6 caracteres.");
+        alert(
+            "A senha precisa ter pelo menos 6 caracteres."
+        );
 
         return;
 
@@ -801,13 +1200,13 @@ function criarConta() {
 
 
     localStorage.setItem(
-        "usuarioZYRO",
+        CONFIG.USUARIO_KEY,
         JSON.stringify(usuario)
     );
 
 
     alert(
-        "Conta criada com sucesso! Agora você pode entrar."
+        "Conta criada com sucesso!"
     );
 
 
@@ -818,22 +1217,45 @@ function criarConta() {
 }
 
 
-/* =====================================================
-   FAZER LOGIN
-===================================================== */
+/* =========================================================
+   LOGIN
+========================================================= */
 
 function fazerLogin() {
 
+    const emailElement =
+        document.getElementById(
+            "loginEmail"
+        );
+
+    const senhaElement =
+        document.getElementById(
+            "loginSenha"
+        );
+
+
+    if (
+        !emailElement ||
+        !senhaElement
+    ) {
+
+        return;
+
+    }
+
+
     const email =
-        document.getElementById("loginEmail").value.trim();
+        emailElement.value.trim().toLowerCase();
 
     const senha =
-        document.getElementById("loginSenha").value;
+        senhaElement.value;
 
 
     if (!email || !senha) {
 
-        alert("Digite seu e-mail e sua senha.");
+        alert(
+            "Digite seu e-mail e sua senha."
+        );
 
         return;
 
@@ -841,7 +1263,9 @@ function fazerLogin() {
 
 
     const usuarioSalvo =
-        localStorage.getItem("usuarioZYRO");
+        localStorage.getItem(
+            CONFIG.USUARIO_KEY
+        );
 
 
     if (!usuarioSalvo) {
@@ -855,36 +1279,49 @@ function fazerLogin() {
     }
 
 
-    const usuario =
-        JSON.parse(usuarioSalvo);
+    try {
+
+        const usuario =
+            JSON.parse(usuarioSalvo);
 
 
-    if (
-        email === usuario.email &&
-        senha === usuario.senha
-    ) {
+        if (
+            email ===
+            String(usuario.email).toLowerCase() &&
+            senha === usuario.senha
+        ) {
 
-        localStorage.setItem(
-            "usuarioLogado",
-            "true"
-        );
+            localStorage.setItem(
+                CONFIG.LOGIN_KEY,
+                "true"
+            );
 
+
+            alert(
+                "Login realizado com sucesso! Bem-vindo(a), " +
+                usuario.nome +
+                "!"
+            );
+
+
+            fecharLogin();
+
+            atualizarLogin();
+
+        } else {
+
+            alert(
+                "E-mail ou senha incorretos."
+            );
+
+        }
+
+    } catch (erro) {
+
+        console.error(erro);
 
         alert(
-            "Login realizado com sucesso! Bem-vindo(a), "
-            + usuario.nome + "!"
-        );
-
-
-        fecharLogin();
-
-
-        atualizarLogin();
-
-    } else {
-
-        alert(
-            "E-mail ou senha incorretos."
+            "Erro ao verificar a conta."
         );
 
     }
@@ -892,56 +1329,63 @@ function fazerLogin() {
 }
 
 
-/* =====================================================
-   ATUALIZAR BOTÃO DE LOGIN
-===================================================== */
+/* =========================================================
+   ATUALIZAR LOGIN
+========================================================= */
 
 function atualizarLogin() {
 
     const botoes =
-        document.querySelectorAll(".icons button");
+        document.querySelectorAll(
+            ".icons button"
+        );
 
 
     const logado =
-        localStorage.getItem("usuarioLogado");
+        localStorage.getItem(
+            CONFIG.LOGIN_KEY
+        );
 
 
     if (!botoes.length) return;
 
 
-    if (logado === "true") {
+    botoes.forEach(botao => {
 
-        botoes.forEach(botao => {
+        const texto =
+            botao.textContent
+                .trim()
+                .toUpperCase();
 
-            if (
-                botao.textContent
-                    .trim()
-                    .startsWith("LOGIN")
-            ) {
 
-                botao.textContent =
-                    "MINHA CONTA";
+        if (
+            logado === "true" &&
+            texto.startsWith("LOGIN")
+        ) {
 
-                botao.onclick =
-                    mostrarConta;
+            botao.textContent =
+                "MINHA CONTA";
 
-            }
+            botao.onclick =
+                mostrarConta;
 
-        });
+        }
 
-    }
+    });
 
 }
 
 
-/* =====================================================
+/* =========================================================
    MINHA CONTA
-===================================================== */
+========================================================= */
 
 function mostrarConta() {
 
     const usuarioSalvo =
-        localStorage.getItem("usuarioZYRO");
+        localStorage.getItem(
+            CONFIG.USUARIO_KEY
+        );
 
 
     if (!usuarioSalvo) {
@@ -953,53 +1397,173 @@ function mostrarConta() {
     }
 
 
-    const usuario =
-        JSON.parse(usuarioSalvo);
+    try {
+
+        const usuario =
+            JSON.parse(usuarioSalvo);
 
 
-    const sair =
-        confirm(
-            "Olá, " +
-            usuario.nome +
-            "!\n\nE-mail: " +
-            usuario.email +
-            "\n\nDeseja sair da conta?"
-        );
+        const sair =
+            confirm(
+
+                "Olá, " +
+                usuario.nome +
+                "!\n\n" +
+
+                "E-mail: " +
+                usuario.email +
+                "\n\n" +
+
+                "Deseja sair da conta?"
+
+            );
 
 
-    if (sair) {
+        if (sair) {
 
-        localStorage.removeItem(
-            "usuarioLogado"
-        );
+            localStorage.removeItem(
+                CONFIG.LOGIN_KEY
+            );
 
+            location.reload();
 
-        location.reload();
+        }
+
+    } catch (erro) {
+
+        console.error(erro);
 
     }
 
 }
 
 
-/* =====================================================
-   FRETE
-===================================================== */
+/* =========================================================
+   CEP
+========================================================= */
 
-function calcularFrete() {
+function limparCEP(cep) {
+
+    return String(cep || "")
+        .replace(/\D/g, "")
+        .substring(0, 8);
+
+}
+
+
+function aplicarMascaraCEP(valor) {
+
+    let cep = limparCEP(valor);
+
+
+    if (cep.length > 5) {
+
+        cep =
+            cep.substring(0, 5) +
+            "-" +
+            cep.substring(5);
+
+    }
+
+
+    return cep;
+
+}
+
+
+/* =========================================================
+   DISTÂNCIA ESTIMADA
+========================================================= */
+
+function calcularDistanciaCEP(
+    cepOrigem,
+    cepDestino
+) {
+
+    const origem =
+        Number(
+            limparCEP(cepOrigem)
+                .substring(0, 3)
+        ) || 0;
+
+
+    const destino =
+        Number(
+            limparCEP(cepDestino)
+                .substring(0, 3)
+        ) || 0;
+
+
+    return Math.abs(
+        origem - destino
+    );
+
+}
+
+
+/* =========================================================
+   VALOR DO FRETE
+========================================================= */
+
+function calcularValorFrete(
+    cepDestino
+) {
+
+    const distancia =
+        calcularDistanciaCEP(
+            CONFIG.CEP_ORIGEM,
+            cepDestino
+        );
+
+
+    let valor =
+        CONFIG.FRETE_MINIMO +
+        (
+            distancia *
+            0.35
+        );
+
+
+    valor =
+        Math.min(
+            valor,
+            CONFIG.FRETE_MAXIMO
+        );
+
+
+    return Math.round(
+        valor * 100
+    ) / 100;
+
+}
+
+
+/* =========================================================
+   CALCULAR FRETE + CEP
+========================================================= */
+
+async function calcularFrete() {
 
     const input =
-        document.getElementById("cepInput");
-
+        document.getElementById(
+            "cepInput"
+        );
 
     const resultado =
-        document.getElementById("freteResultado");
+        document.getElementById(
+            "freteResultado"
+        );
 
 
-    if (!input || !resultado) return;
+    if (!input || !resultado) {
+
+        return;
+
+    }
 
 
-    let cep =
-        input.value.replace(/\D/g, "");
+    const cep =
+        limparCEP(input.value);
 
 
     if (cep.length !== 8) {
@@ -1018,31 +1582,46 @@ function calcularFrete() {
 
 
     input.value =
-        cep.substring(0, 5) +
-        "-" +
-        cep.substring(5);
+        aplicarMascaraCEP(cep);
 
 
     resultado.innerHTML = `
 
-        <p>
-            Consultando endereço...
-        </p>
+        <div class="freteLoading">
+
+            <p>
+                Consultando endereço...
+            </p>
+
+        </div>
 
     `;
 
 
-    fetch(
-        "https://viacep.com.br/ws/" +
-        cep +
-        "/json/"
-    )
+    try {
 
-    .then(resposta => resposta.json())
+        const resposta =
+            await fetch(
+                `https://viacep.com.br/ws/${cep}/json/`
+            );
 
-    .then(dados => {
 
-        if (dados.erro) {
+        if (!resposta.ok) {
+
+            throw new Error(
+                "Erro na consulta do CEP."
+            );
+
+        }
+
+
+        const dados =
+            await resposta.json();
+
+
+        if (
+            dados.erro
+        ) {
 
             resultado.innerHTML = `
 
@@ -1052,47 +1631,156 @@ function calcularFrete() {
 
             `;
 
+            esconderMapa();
+
             return;
 
         }
 
 
-        /*
-         * Cálculo demonstrativo de frete.
-         * Para uma loja real, o valor deve vir
-         * de uma API de transportadora.
-         */
+        /* =========================================
+           CALCULA FRETE
+        ========================================= */
 
-        const frete =
-            19.90;
+        freteAtual =
+            calcularValorFrete(cep);
 
+
+        localStorage.setItem(
+            CONFIG.FRETE_KEY,
+            String(freteAtual)
+        );
+
+
+        /* =========================================
+           SALVA ENDEREÇO
+        ========================================= */
+
+        enderecoAtual = {
+
+            cep: cep,
+
+            logradouro:
+                dados.logradouro || "",
+
+            complemento:
+                dados.complemento || "",
+
+            bairro:
+                dados.bairro || "",
+
+            cidade:
+                dados.localidade || "",
+
+            estado:
+                dados.uf || "",
+
+            estadoCompleto:
+                dados.estado || "",
+
+            regiao:
+                dados.regiao || "",
+
+            ibge:
+                dados.ibge || "",
+
+            gia:
+                dados.gia || "",
+
+            ddd:
+                dados.ddd || ""
+
+        };
+
+
+        localStorage.setItem(
+            CONFIG.ENDERECO_KEY,
+            JSON.stringify(enderecoAtual)
+        );
+
+
+        atualizarValoresFrete();
+
+
+        /* =========================================
+           MOSTRA ENDEREÇO
+        ========================================= */
 
         resultado.innerHTML = `
 
             <div class="freteSucesso">
 
                 <strong>
-                    ${dados.localidade} - ${dados.uf}
+                    ENDEREÇO ENCONTRADO
                 </strong>
 
                 <p>
-                    ${dados.logradouro || "Endereço localizado"}
+                    ${
+                        dados.logradouro ||
+                        "Endereço não informado"
+                    }
+                    ${
+                        dados.complemento
+                        ? ", " + dados.complemento
+                        : ""
+                    }
                 </p>
 
                 <p>
-                    Frete: <strong>
-                        R$ ${formatarPreco(frete)}
+                    ${
+                        dados.bairro ||
+                        "Bairro não informado"
+                    }
+                </p>
+
+                <p>
+                    ${
+                        dados.localidade
+                    }
+                    -
+                    ${
+                        dados.uf
+                    }
+                </p>
+
+                <p>
+                    CEP:
+                    ${
+                        aplicarMascaraCEP(cep)
+                    }
+                </p>
+
+                <hr>
+
+                <p>
+                    Frete:
+                    <strong>
+                        R$ ${formatarPreco(freteAtual)}
                     </strong>
                 </p>
 
                 <p>
-                    Prazo estimado: 5 a 8 dias úteis
+                    Prazo estimado:
+                    <strong>
+                        ${CONFIG.PRAZO_MINIMO}
+                        a
+                        ${CONFIG.PRAZO_MAXIMO}
+                        dias úteis
+                    </strong>
+                </p>
+
+                <p>
+                    Total com frete:
+                    <strong>
+                        R$ ${formatarPreco(calcularTotal())}
+                    </strong>
                 </p>
 
             </div>
 
 
             <button
+                type="button"
                 class="paymentRedirect"
                 onclick="irParaPagamento()">
 
@@ -1104,60 +1792,131 @@ function calcularFrete() {
         `;
 
 
-        /* Mostrar mapa */
+        /* =========================================
+           MOSTRA MAPA
+        ========================================= */
 
-        mostrarMapa(
-            dados.localidade,
-            dados.uf,
-            dados.logradouro
+        await mostrarMapa(
+            dados,
+            cep
         );
 
-    })
 
-    .catch(erro => {
+    } catch (erro) {
 
-        console.error(erro);
+        console.error(
+            "Erro no cálculo do frete:",
+            erro
+        );
 
 
         resultado.innerHTML = `
 
             <p class="freteErro">
 
-                Não foi possível consultar o CEP.
+                Não foi possível consultar
+                o CEP agora.
+
+                <br><br>
+
+                Tente novamente.
 
             </p>
 
         `;
 
-    });
+        esconderMapa();
+
+    }
 
 }
 
 
-/* =====================================================
-   MAPA
-===================================================== */
+/* =========================================================
+   ESCONDER MAPA
+========================================================= */
 
-function mostrarMapa(cidade, estado, endereco) {
+function esconderMapa() {
 
     const container =
-        document.getElementById("mapaContainer");
+        document.getElementById(
+            "mapaContainer"
+        );
 
+
+    if (container) {
+
+        container.style.display =
+            "none";
+
+    }
+
+
+    if (mapa) {
+
+        mapa.remove();
+
+        mapa = null;
+
+    }
+
+}
+
+
+/* =========================================================
+   MAPA — LOCALIZAR ENDEREÇO
+========================================================= */
+
+async function mostrarMapa(
+    dados,
+    cep
+) {
+
+    const container =
+        document.getElementById(
+            "mapaContainer"
+        );
 
     const mapaElemento =
-        document.getElementById("mapa");
+        document.getElementById(
+            "mapa"
+        );
 
 
-    if (!container || !mapaElemento) return;
+    if (!container || !mapaElemento) {
+
+        console.warn(
+            "Container do mapa não encontrado."
+        );
+
+        return;
+
+    }
 
 
-    container.style.display = "block";
+    if (
+        typeof L === "undefined"
+    ) {
+
+        console.warn(
+            "Leaflet não está carregado."
+        );
+
+        container.style.display =
+            "none";
+
+        return;
+
+    }
 
 
-    /*
-     * Se o mapa já existe, remove antes
-     * de criar outro.
-     */
+    container.style.display =
+        "block";
+
+
+    /* =========================================
+       REMOVE MAPA ANTERIOR
+    ========================================= */
 
     if (mapa) {
 
@@ -1168,102 +1927,411 @@ function mostrarMapa(cidade, estado, endereco) {
     }
 
 
+    /* =========================================
+       CRIA MAPA
+    ========================================= */
+
     mapa =
-        L.map("mapa")
-            .setView(
-                [-14.2350, -51.9253],
-                4
-            );
+        L.map("mapa", {
+            scrollWheelZoom: true
+        }).setView(
+            [-14.2350, -51.9253],
+            4
+        );
 
 
     L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
             attribution:
-                "&copy; OpenStreetMap"
+                "&copy; OpenStreetMap contributors",
+            maxZoom: 19
         }
     ).addTo(mapa);
 
 
-    /*
-     * Consulta localização aproximada
-     * usando Nominatim.
-     */
+    /* =========================================
+       CONSULTA COMPLETA
+    ========================================= */
 
-    fetch(
-        "https://nominatim.openstreetmap.org/search?format=json&q="
-        +
-        encodeURIComponent(
-            cidade + ", " + estado + ", Brasil"
-        )
-    )
-
-    .then(resposta => resposta.json())
-
-    .then(dados => {
-
-        if (!dados.length) return;
+    const consultas = [];
 
 
-        const latitude =
-            parseFloat(dados[0].lat);
+    /* Consulta pelo CEP primeiro */
+    consultas.push(
+        `${cep}, Brasil`
+    );
 
-        const longitude =
-            parseFloat(dados[0].lon);
+
+    /* Consulta endereço */
+    const enderecoCompleto = [
+
+        dados.logradouro,
+
+        dados.bairro,
+
+        dados.localidade,
+
+        dados.uf,
+
+        cep,
+
+        "Brasil"
+
+    ].filter(Boolean).join(", ");
 
 
-        mapa.setView(
-            [latitude, longitude],
-            12
+    if (enderecoCompleto) {
+
+        consultas.push(
+            enderecoCompleto
         );
 
+    }
 
-        L.marker([
-            latitude,
-            longitude
-        ])
-        .addTo(mapa)
-        .bindPopup(
-            "<b>Local de entrega</b><br>" +
-            cidade +
-            " - " +
-            estado
-        )
-        .openPopup();
 
-    })
+    /* Consulta cidade */
+    consultas.push(
+        `${dados.localidade}, ${dados.uf}, Brasil`
+    );
 
-    .catch(erro => {
 
-        console.log(
-            "Não foi possível localizar no mapa."
+    let localizado = false;
+
+
+    /* =========================================
+       TENTA TODAS AS CONSULTAS
+    ========================================= */
+
+    for (
+        const consulta of consultas
+    ) {
+
+        if (localizado) {
+            break;
+        }
+
+
+        try {
+
+            const url =
+                "https://nominatim.openstreetmap.org/search?" +
+                new URLSearchParams({
+
+                    format: "json",
+
+                    q: consulta,
+
+                    countrycodes: "br",
+
+                    limit: "1",
+
+                    addressdetails: "1"
+
+                });
+
+
+            const resposta =
+                await fetch(
+                    url,
+                    {
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            if (!resposta.ok) {
+                continue;
+            }
+
+
+            const resultados =
+                await resposta.json();
+
+
+            if (
+                !Array.isArray(resultados) ||
+                !resultados.length
+            ) {
+
+                continue;
+
+            }
+
+
+            const local =
+                resultados[0];
+
+
+            const latitude =
+                parseFloat(local.lat);
+
+            const longitude =
+                parseFloat(local.lon);
+
+
+            if (
+                !Number.isFinite(latitude) ||
+                !Number.isFinite(longitude)
+            ) {
+
+                continue;
+
+            }
+
+
+            /* =================================
+               DEFINE ZOOM
+            ================================= */
+
+            let zoom = 16;
+
+
+            if (
+                consulta ===
+                `${dados.localidade}, ${dados.uf}, Brasil`
+            ) {
+
+                zoom = 12;
+
+            }
+
+
+            mapa.setView(
+                [
+                    latitude,
+                    longitude
+                ],
+                zoom
+            );
+
+
+            /* =================================
+               MARCADOR
+            ================================= */
+
+            const marcador =
+                L.marker([
+                    latitude,
+                    longitude
+                ]).addTo(mapa);
+
+
+            marcador.bindPopup(`
+
+                <strong>
+                    ZYRO® — Local de entrega
+                </strong>
+
+                <br><br>
+
+                ${
+                    dados.logradouro ||
+                    "Endereço"
+                }
+
+                <br>
+
+                ${
+                    dados.bairro ||
+                    ""
+                }
+
+                <br>
+
+                ${
+                    dados.localidade ||
+                    ""
+                }
+
+                -
+
+                ${
+                    dados.uf ||
+                    ""
+                }
+
+                <br>
+
+                CEP:
+
+                ${
+                    aplicarMascaraCEP(cep)
+                }
+
+            `);
+
+
+            marcador.openPopup();
+
+
+            localizado = true;
+
+
+        } catch (erro) {
+
+            console.warn(
+                "Erro ao tentar localizar:",
+                consulta,
+                erro
+            );
+
+        }
+
+    }
+
+
+    /* =========================================
+       SE NÃO LOCALIZOU
+    ========================================= */
+
+    if (!localizado) {
+
+        console.warn(
+            "Endereço não encontrado no mapa."
         );
 
-    });
+        container.style.display =
+            "none";
+
+        return;
+
+    }
 
 
-    /*
-     * Corrige tamanho do Leaflet
-     * quando o container estava escondido.
-     */
+    /* =========================================
+       CORRIGE TAMANHO
+    ========================================= */
 
     setTimeout(() => {
 
-        mapa.invalidateSize();
+        if (mapa) {
 
-    }, 300);
+            mapa.invalidateSize();
+
+        }
+
+    }, 500);
 
 }
 
 
-/* =====================================================
-   IR PARA PAGAMENTO
-===================================================== */
+/* =========================================================
+   RESTAURAR FRETE
+========================================================= */
+
+function restaurarFrete() {
+
+    try {
+
+        const freteSalvo =
+            localStorage.getItem(
+                CONFIG.FRETE_KEY
+            );
+
+
+        const enderecoSalvo =
+            localStorage.getItem(
+                CONFIG.ENDERECO_KEY
+            );
+
+
+        if (freteSalvo) {
+
+            freteAtual =
+                Number(freteSalvo) || 0;
+
+        }
+
+
+        if (enderecoSalvo) {
+
+            enderecoAtual =
+                JSON.parse(
+                    enderecoSalvo
+                );
+
+
+            const input =
+                document.getElementById(
+                    "cepInput"
+                );
+
+
+            if (
+                input &&
+                enderecoAtual.cep
+            ) {
+
+                input.value =
+                    aplicarMascaraCEP(
+                        enderecoAtual.cep
+                    );
+
+            }
+
+        }
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao restaurar frete:",
+            erro
+        );
+
+    }
+
+
+    atualizarValoresFrete();
+
+}
+
+
+/* =========================================================
+   PAGAMENTO
+========================================================= */
 
 function irParaPagamento() {
 
+    if (carrinho.length === 0) {
+
+        alert(
+            "Seu carrinho está vazio."
+        );
+
+        return;
+
+    }
+
+
+    if (freteAtual <= 0) {
+
+        alert(
+            "Informe seu CEP e calcule o frete antes de continuar."
+        );
+
+        const cepInput =
+            document.getElementById(
+                "cepInput"
+            );
+
+
+        if (cepInput) {
+            cepInput.focus();
+        }
+
+        return;
+
+    }
+
+
     const paymentArea =
-        document.querySelector(".paymentArea");
+        document.querySelector(
+            ".paymentArea"
+        );
 
 
     if (!paymentArea) {
@@ -1275,6 +2343,9 @@ function irParaPagamento() {
         return;
 
     }
+
+
+    atualizarResumoPagamento();
 
 
     paymentArea.scrollIntoView({
@@ -1302,77 +2373,194 @@ function irParaPagamento() {
 }
 
 
-/* =====================================================
+/* =========================================================
+   RESUMO PAGAMENTO
+========================================================= */
+
+function atualizarResumoPagamento() {
+
+    const subtotal =
+        calcularSubtotal();
+
+    const total =
+        calcularTotal();
+
+
+    const subtotalPagamento =
+        document.getElementById(
+            "paymentSubtotal"
+        );
+
+    const fretePagamento =
+        document.getElementById(
+            "paymentFrete"
+        );
+
+    const totalPagamento =
+        document.getElementById(
+            "paymentTotal"
+        );
+
+
+    if (subtotalPagamento) {
+
+        subtotalPagamento.textContent =
+            "R$ " +
+            formatarPreco(subtotal);
+
+    }
+
+
+    if (fretePagamento) {
+
+        fretePagamento.textContent =
+            "R$ " +
+            formatarPreco(freteAtual);
+
+    }
+
+
+    if (totalPagamento) {
+
+        totalPagamento.textContent =
+            "R$ " +
+            formatarPreco(total);
+
+    }
+
+}
+
+
+/* =========================================================
    FORMAS DE PAGAMENTO
-===================================================== */
+========================================================= */
+
+function atualizarFormaPagamento(tipo) {
+
+    const cartao =
+        document.getElementById(
+            "cartaoForm"
+        );
+
+    const pix =
+        document.getElementById(
+            "pixInfo"
+        );
+
+    const boleto =
+        document.getElementById(
+            "boletoInfo"
+        );
+
+
+    if (cartao) {
+
+        cartao.style.display =
+            tipo === "cartao"
+                ? "block"
+                : "none";
+
+    }
+
+
+    if (pix) {
+
+        pix.style.display =
+            tipo === "pix"
+                ? "block"
+                : "none";
+
+    }
+
+
+    if (boleto) {
+
+        boleto.style.display =
+            tipo === "boleto"
+                ? "block"
+                : "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   EVENTO PAGAMENTO
+========================================================= */
 
 document.addEventListener(
     "change",
     function(event) {
 
         if (
+            !event.target ||
             event.target.name !== "pagamento"
         ) {
-
             return;
-
         }
 
 
-        const tipo =
-            event.target.value;
-
-
-        const cartao =
-            document.getElementById("cartaoForm");
-
-
-        const pix =
-            document.getElementById("pixInfo");
-
-
-        const boleto =
-            document.getElementById("boletoInfo");
-
-
-        if (cartao) {
-
-            cartao.style.display =
-                tipo === "cartao"
-                ? "block"
-                : "none";
-
-        }
-
-
-        if (pix) {
-
-            pix.style.display =
-                tipo === "pix"
-                ? "block"
-                : "none";
-
-        }
-
-
-        if (boleto) {
-
-            boleto.style.display =
-                tipo === "boleto"
-                ? "block"
-                : "none";
-
-        }
+        atualizarFormaPagamento(
+            event.target.value
+        );
 
     }
 );
 
 
-/* =====================================================
-   FINALIZAR COMPRA
-===================================================== */
+/* =========================================================
+   VALIDAR CARTÃO
+========================================================= */
 
-function finalizarCompra() {
+function validarCartao() {
+
+    const numero =
+        document.querySelector(
+            '#cartaoForm input[placeholder="Número do cartão"]'
+        );
+
+
+    if (!numero) {
+
+        return false;
+
+    }
+
+
+    const valor =
+        numero.value.replace(
+            /\D/g,
+            ""
+        );
+
+
+    if (
+        valor.length < 13 ||
+        valor.length > 19
+    ) {
+
+        alert(
+            "Digite um número de cartão válido."
+        );
+
+        numero.focus();
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   VALIDAR CHECKOUT
+========================================================= */
+
+function validarCheckout() {
 
     if (carrinho.length === 0) {
 
@@ -1380,27 +2568,58 @@ function finalizarCompra() {
             "Seu carrinho está vazio."
         );
 
-        return;
+        return false;
 
     }
 
 
-    const usuarioLogado =
-        localStorage.getItem("usuarioLogado");
-
-
-    if (usuarioLogado !== "true") {
+    if (
+        localStorage.getItem(
+            CONFIG.LOGIN_KEY
+        ) !== "true"
+    ) {
 
         alert(
-            "Faça login antes de finalizar sua compra."
+            "Faça login antes de finalizar a compra."
         );
-
 
         fecharCarrinho();
 
         abrirLogin();
 
-        return;
+        return false;
+
+    }
+
+
+    if (!enderecoAtual) {
+
+        alert(
+            "Informe o CEP para calcular o frete."
+        );
+
+        const cep =
+            document.getElementById(
+                "cepInput"
+            );
+
+
+        if (cep) {
+            cep.focus();
+        }
+
+        return false;
+
+    }
+
+
+    if (freteAtual <= 0) {
+
+        alert(
+            "Calcule o frete antes de finalizar a compra."
+        );
+
+        return false;
 
     }
 
@@ -1417,82 +2636,309 @@ function finalizarCompra() {
             "Escolha uma forma de pagamento."
         );
 
-        return;
+        return false;
 
     }
 
 
-    if (pagamento.value === "cartao") {
+    if (
+        pagamento.value === "cartao"
+    ) {
 
-        const numero =
-            document.querySelector(
-                '#cartaoForm input[placeholder="Número do cartão"]'
-            );
+        if (!validarCartao()) {
 
-
-        if (
-            !numero ||
-            numero.value.replace(/\D/g, "").length < 13
-        ) {
-
-            alert(
-                "Digite um número de cartão válido."
-            );
-
-            return;
+            return false;
 
         }
 
     }
 
 
-    let mensagem =
-        "PEDIDO REALIZADO COM SUCESSO!\n\n";
+    return true;
+
+}
+
+
+/* =========================================================
+   CRIAR RESUMO DO PEDIDO
+========================================================= */
+
+function criarResumoPedido(pagamento) {
+
+    let resumo =
+        "PEDIDO ZYRO®\n\n";
 
 
     carrinho.forEach(item => {
 
-        mensagem +=
+        resumo +=
+
             item.nome +
-            " | " +
+
+            " | Tamanho: " +
+
             item.tamanho +
+
             " | Qtd: " +
+
             item.quantidade +
+
+            " | R$ " +
+
+            formatarPreco(
+                item.preco *
+                item.quantidade
+            ) +
+
             "\n";
 
     });
 
 
-    mensagem +=
-        "\nForma de pagamento: " +
-        pagamento.value.toUpperCase();
+    resumo +=
+
+        "\nSubtotal: R$ " +
+        formatarPreco(
+            calcularSubtotal()
+        );
 
 
-    alert(mensagem);
+    resumo +=
+
+        "\nFrete: R$ " +
+        formatarPreco(
+            freteAtual
+        );
+
+
+    resumo +=
+
+        "\nTotal: R$ " +
+        formatarPreco(
+            calcularTotal()
+        );
+
+
+    resumo +=
+
+        "\n\nPagamento: " +
+        pagamento.toUpperCase();
+
+
+    if (enderecoAtual) {
+
+        resumo +=
+
+            "\n\nENDEREÇO DE ENTREGA\n" +
+
+            (
+                enderecoAtual.logradouro ||
+                ""
+            ) +
+
+            "\n" +
+
+            (
+                enderecoAtual.bairro ||
+                ""
+            ) +
+
+            "\n" +
+
+            (
+                enderecoAtual.cidade ||
+                ""
+            ) +
+
+            " - " +
+
+            (
+                enderecoAtual.estado ||
+                ""
+            ) +
+
+            "\nCEP: " +
+
+            aplicarMascaraCEP(
+                enderecoAtual.cep
+            );
+
+    }
+
+
+    return resumo;
+
+}
+
+
+/* =========================================================
+   FINALIZAR COMPRA
+========================================================= */
+
+function finalizarCompra() {
+
+    if (!validarCheckout()) {
+        return;
+    }
+
+
+    const pagamento =
+        document.querySelector(
+            'input[name="pagamento"]:checked'
+        );
+
+
+    if (!pagamento) {
+        return;
+    }
+
+
+    const resumo =
+        criarResumoPedido(
+            pagamento.value
+        );
+
+
+    console.log(
+        "PEDIDO GERADO:",
+        resumo
+    );
+
+
+    const pedidoId =
+        "ZYRO-" +
+        Date.now();
+
+
+    const pedido = {
+
+        id: pedidoId,
+
+        itens: carrinho,
+
+        subtotal:
+            calcularSubtotal(),
+
+        frete:
+            freteAtual,
+
+        total:
+            calcularTotal(),
+
+        pagamento:
+            pagamento.value,
+
+        endereco:
+            enderecoAtual,
+
+        data:
+            new Date().toISOString()
+
+    };
+
+
+    localStorage.setItem(
+        "ultimoPedidoZYRO",
+        JSON.stringify(pedido)
+    );
+
+
+    alert(
+
+        "PEDIDO REALIZADO COM SUCESSO!\n\n" +
+
+        "Número do pedido: " +
+        pedidoId +
+
+        "\n\n" +
+
+        "Total: R$ " +
+        formatarPreco(
+            pedido.total
+        ) +
+
+        "\n\n" +
+
+        "Pagamento: " +
+        pagamento.value.toUpperCase()
+
+    );
 
 
     carrinho = [];
 
+    salvarCarrinho();
 
     atualizarCarrinho();
 
+    atualizarResumoPagamento();
 
     fecharCarrinho();
-
 
     fecharProduto();
 
 }
 
 
-/* =====================================================
-   LOGIN MODERADOR
-===================================================== */
+/* =========================================================
+   GERAR PIX
+========================================================= */
+
+function gerarPix() {
+
+    if (!validarCheckout()) {
+        return;
+    }
+
+
+    const codigo =
+        "ZYROPIX-" +
+        Date.now();
+
+
+    const pixCodigo =
+        document.getElementById(
+            "pixCodigo"
+        );
+
+
+    if (pixCodigo) {
+
+        pixCodigo.textContent =
+            codigo;
+
+    }
+
+
+    alert(
+
+        "PIX preparado!\n\n" +
+
+        "Valor: R$ " +
+
+        formatarPreco(
+            calcularTotal()
+        ) +
+
+        "\n\n" +
+
+        "Para cobrança PIX real, conecte um gateway de pagamento."
+
+    );
+
+}
+
+
+/* =========================================================
+   LOGIN ADMIN
+========================================================= */
 
 function abrirAdminLogin() {
 
     const modal =
-        document.getElementById("adminLoginModal");
+        document.getElementById(
+            "adminLoginModal"
+        );
 
 
     if (modal) {
@@ -1507,7 +2953,9 @@ function abrirAdminLogin() {
 function fecharAdminLogin() {
 
     const modal =
-        document.getElementById("adminLoginModal");
+        document.getElementById(
+            "adminLoginModal"
+        );
 
 
     if (modal) {
@@ -1519,28 +2967,46 @@ function fecharAdminLogin() {
 }
 
 
-/* =====================================================
-   AUTENTICAR MODERADOR
-===================================================== */
+/* =========================================================
+   AUTENTICAR ADMIN
+========================================================= */
 
 function autenticarAdmin() {
 
+    const usuarioElement =
+        document.getElementById(
+            "adminUser"
+        );
+
+    const senhaElement =
+        document.getElementById(
+            "adminPass"
+        );
+
+
+    if (
+        !usuarioElement ||
+        !senhaElement
+    ) {
+        return;
+    }
+
+
     const usuario =
-        document.getElementById("adminUser").value;
+        usuarioElement.value.trim();
 
     const senha =
-        document.getElementById("adminPass").value;
+        senhaElement.value;
 
 
     /*
-     * Login demonstrativo.
-     *
-     * Usuário:
-     * admin
-     *
-     * Senha:
-     * 1234
-     */
+       LOGIN DEMONSTRATIVO
+
+       Usuário: admin
+       Senha: 1234
+
+       NÃO USE EM PRODUÇÃO.
+    */
 
     if (
         usuario === "admin" &&
@@ -1563,7 +3029,9 @@ function autenticarAdmin() {
 
         if (addProduct) {
 
-            addProduct.classList.add("active");
+            addProduct.classList.add(
+                "active"
+            );
 
         }
 
@@ -1578,9 +3046,9 @@ function autenticarAdmin() {
 }
 
 
-/* =====================================================
-   CADASTRO DE PRODUTO
-===================================================== */
+/* =========================================================
+   FECHAR CADASTRO PRODUTO
+========================================================= */
 
 function fecharAddProduct() {
 
@@ -1592,26 +3060,69 @@ function fecharAddProduct() {
 
     if (modal) {
 
-        modal.classList.remove("active");
+        modal.classList.remove(
+            "active"
+        );
 
     }
 
 }
 
 
+/* =========================================================
+   SALVAR PRODUTO
+========================================================= */
+
 function salvarProduto() {
 
+    const nomeElement =
+        document.getElementById(
+            "pNome"
+        );
+
+    const categoriaElement =
+        document.getElementById(
+            "pCategoria"
+        );
+
+    const precoElement =
+        document.getElementById(
+            "pPreco"
+        );
+
+    const imagemElement =
+        document.getElementById(
+            "pImg"
+        );
+
+
+    if (
+        !nomeElement ||
+        !categoriaElement ||
+        !precoElement ||
+        !imagemElement
+    ) {
+
+        alert(
+            "Campos do produto não encontrados."
+        );
+
+        return;
+
+    }
+
+
     const nome =
-        document.getElementById("pNome").value;
+        nomeElement.value.trim();
 
     const categoria =
-        document.getElementById("pCategoria").value;
+        categoriaElement.value.trim();
 
     const preco =
-        document.getElementById("pPreco").value;
+        precoElement.value.trim();
 
     const imagem =
-        document.getElementById("pImg").value;
+        imagemElement.value.trim();
 
 
     if (
@@ -1638,20 +3149,20 @@ function salvarProduto() {
     fecharAddProduct();
 
 
-    document.getElementById("pNome").value = "";
+    nomeElement.value = "";
 
-    document.getElementById("pCategoria").value = "";
+    categoriaElement.value = "";
 
-    document.getElementById("pPreco").value = "";
+    precoElement.value = "";
 
-    document.getElementById("pImg").value = "";
+    imagemElement.value = "";
 
 }
 
 
-/* =====================================================
+/* =========================================================
    FECHAR MODAIS CLICANDO FORA
-===================================================== */
+========================================================= */
 
 document.addEventListener(
     "click",
@@ -1673,7 +3184,8 @@ document.addEventListener(
                     "active"
                 );
 
-                document.body.style.overflow = "";
+                document.body.style.overflow =
+                    "";
 
             }
 
@@ -1683,15 +3195,19 @@ document.addEventListener(
 );
 
 
-/* =====================================================
-   ESC PARA FECHAR
-===================================================== */
+/* =========================================================
+   ESC FECHA MODAIS
+========================================================= */
 
 document.addEventListener(
     "keydown",
     function(event) {
 
-        if (event.key !== "Escape") return;
+        if (
+            event.key !== "Escape"
+        ) {
+            return;
+        }
 
 
         fecharProduto();
@@ -1710,74 +3226,152 @@ document.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================================
    MÁSCARA CEP
-===================================================== */
+========================================================= */
 
 document.addEventListener(
     "input",
     function(event) {
 
         if (
+            !event.target ||
             event.target.id !== "cepInput"
         ) {
-
             return;
-
-        }
-
-
-        let cep =
-            event.target.value.replace(
-                /\D/g,
-                ""
-            );
-
-
-        if (cep.length > 5) {
-
-            cep =
-                cep.substring(0, 5) +
-                "-" +
-                cep.substring(5, 8);
-
         }
 
 
         event.target.value =
-            cep;
+            aplicarMascaraCEP(
+                event.target.value
+            );
 
     }
 );
 
 
-/* =====================================================
+/* =========================================================
+   ENTER NO CEP
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            !event.target ||
+            event.target.id !== "cepInput"
+        ) {
+            return;
+        }
+
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            calcularFrete();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ATUALIZAÇÃO AUTOMÁTICA PAGAMENTO
+========================================================= */
+
+document.addEventListener(
+    "input",
+    function(event) {
+
+        if (
+            event.target.closest(
+                ".paymentArea"
+            )
+        ) {
+
+            atualizarResumoPagamento();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
    INICIALIZAÇÃO
-===================================================== */
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     function() {
 
+        /* ================================
+           CARRINHO
+        ================================= */
+
+        carrinho =
+            carregarCarrinho();
+
+
+        /* ================================
+           FRETE
+        ================================= */
+
+        restaurarFrete();
+
+
+        /* ================================
+           ATUALIZA CARRINHO
+        ================================= */
+
         atualizarCarrinho();
+
+
+        /* ================================
+           LOGIN
+        ================================= */
 
         atualizarLogin();
 
 
-        /*
-         * Deixa PIX selecionado inicialmente.
-         */
+        /* ================================
+           PIX PADRÃO
+        ================================= */
 
         const pix =
-            document.getElementById("pixInfo");
-
+            document.getElementById(
+                "pixInfo"
+            );
 
         const cartao =
-            document.getElementById("cartaoForm");
-
+            document.getElementById(
+                "cartaoForm"
+            );
 
         const boleto =
-            document.getElementById("boletoInfo");
+            document.getElementById(
+                "boletoInfo"
+            );
+
+
+        const pagamentoPix =
+            document.querySelector(
+                'input[name="pagamento"][value="pix"]'
+            );
+
+
+        if (pagamentoPix) {
+
+            pagamentoPix.checked =
+                true;
+
+        }
 
 
         if (pix) {
@@ -1803,5 +3397,302 @@ document.addEventListener(
 
         }
 
+
+        /* ================================
+           RESUMO
+        ================================= */
+
+        atualizarResumoPagamento();
+
     }
+
 );
+
+// Exemplo básico para fazer a busca filtrar os cards do produto
+function buscarProduto() {
+    let input = document.getElementById('searchInput').value.toLowerCase();
+    let cards = document.querySelectorAll('#productList .card');
+    
+    cards.forEach(card => {
+        let title = card.querySelector('h3').innerText.toLowerCase();
+        if (title.includes(input)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+
+// Funções do Modal de Login
+function abrirLogin() {
+    document.getElementById('loginModal').style.display = 'flex';
+}
+
+function fecharLogin() {
+    document.getElementById('loginModal').style.display = 'none';
+}
+
+function realizarLogin(event) {
+    event.preventDefault();
+    alert('Login efetuado com sucesso!');
+    fecharLogin();
+}
+
+// Adicione este listener ou substitua no seu script.js
+document.getElementById('searchInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Evita recarregar a página
+        
+        let dropSection = document.getElementById('drop');
+        dropSection.scrollIntoView({ behavior: 'smooth' });
+    }
+});
+
+// Adicione este listener ou substitua no seu script.js
+document.getElementById('searchInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Evita recarregar a página
+        
+        let dropSection = document.getElementById('drop');
+        dropSection.scrollIntoView({ behavior: 'smooth' });
+    }
+});
+
+function buscarProdutoAutocomplete() {
+    let input = document.getElementById('searchInput').value.toLowerCase().trim();
+    let dropdown = document.getElementById('searchDropdown');
+    let cards = document.querySelectorAll('#productList .card, .products .card');
+
+    // Limpa os resultados anteriores
+    dropdown.innerHTML = '';
+
+    // Se o campo estiver vazio, esconde o dropdown
+    if (input.length === 0) {
+        dropdown.classList.remove('active');
+        return;
+    }
+
+    let achou = false;
+
+    cards.forEach(card => {
+        let titulo = card.querySelector('h3') ? card.querySelector('h3').innerText : '';
+        let preco = card.querySelector('strong') ? card.querySelector('strong').innerText : '';
+        let imagem = card.querySelector('img') ? card.querySelector('img').src : '';
+
+        // Verifica se bate com a pesquisa
+        if (titulo.toLowerCase().includes(input)) {
+            achou = true;
+
+            // Cria o item da lista
+            let item = document.createElement('div');
+            item.className = 'searchItem';
+            item.innerHTML = `
+                <img src="${imagem}" alt="${titulo}">
+                <div class="searchItemInfo">
+                    <strong>${titulo}</strong>
+                    <span>${preco}</span>
+                </div>
+            `;
+
+            // Ao clicar no item da lista, aciona o clique do card correspondente
+            item.onclick = function () {
+                card.click(); // Abre o modal do produto
+                dropdown.classList.remove('active'); // Esconde o dropdown
+                document.getElementById('searchInput').value = ''; // Limpa o campo
+            };
+
+            dropdown.appendChild(item);
+        }
+    });
+
+    // Se não encontrou nada
+    if (!achou) {
+        dropdown.innerHTML = `<div class="noResults">NENHUM PRODUTO ENCONTRADO</div>`;
+    }
+
+    // Mostra o dropdown
+    dropdown.classList.add('active');
+}
+
+// Esconde o dropdown se clicar fora da barra de pesquisa
+document.addEventListener('click', function (event) {
+    let searchBox = document.querySelector('.searchBox');
+    let dropdown = document.getElementById('searchDropdown');
+    
+    if (searchBox && !searchBox.contains(event.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
+function buscarProdutoAutocomplete() {
+    let input = document.getElementById('searchInput').value.toLowerCase().trim();
+    let dropdown = document.getElementById('searchDropdown');
+    
+    // Pega todos os cards de produtos do site
+    let cards = document.querySelectorAll('.card');
+
+    if (!dropdown) return;
+
+    // Limpa a lista anterior
+    dropdown.innerHTML = '';
+
+    // Se não tiver nada digitado, esconde
+    if (input.length === 0) {
+        dropdown.classList.remove('active');
+        return;
+    }
+
+    let achou = false;
+
+    cards.forEach(card => {
+        // Busca o texto do título dentro do card
+        let tituloElemento = card.querySelector('h3') || card.querySelector('h4') || card.querySelector('.title');
+        let titulo = tituloElemento ? tituloElemento.innerText : card.innerText;
+        
+        // Busca a imagem do produto
+        let imgElemento = card.querySelector('img');
+        let imagem = imgElemento ? imgElemento.src : '';
+
+        // Busca o preço (procura por R$ ou pela tag strong/span)
+        let precoElemento = card.querySelector('strong') || card.querySelector('.price') || card.querySelector('span');
+        let preco = precoElemento ? precoElemento.innerText : '';
+
+        // Se o título condiz com o que foi digitado
+        if (titulo.toLowerCase().includes(input)) {
+            achou = true;
+
+            let item = document.createElement('div');
+            item.className = 'searchItem';
+            item.innerHTML = `
+                ${imagem ? `<img src="${imagem}" alt="${titulo}">` : ''}
+                <div class="searchItemInfo">
+                    <strong>${titulo}</strong>
+                    ${preco ? `<span>${preco}</span>` : ''}
+                </div>
+            `;
+
+            // Ao clicar no item do dropdown, clica no card original e fecha o menu
+            item.addEventListener('click', function() {
+                card.click();
+                dropdown.classList.remove('active');
+                document.getElementById('searchInput').value = '';
+            });
+
+            dropdown.appendChild(item);
+        }
+    });
+
+    if (!achou) {
+        dropdown.innerHTML = `<div class="noResults">NENHUM PRODUTO ENCONTRADO</div>`;
+    }
+
+    dropdown.classList.add('active');
+}
+
+// Esconde o menu ao clicar fora dele
+document.addEventListener('click', function (e) {
+    let searchBox = document.querySelector('.searchBox');
+    let dropdown = document.getElementById('searchDropdown');
+    if (searchBox && dropdown && !searchBox.contains(e.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
+// =====================================================
+// LÓGICA DA BARRA DE PESQUISA (SEARCH DROPDOWN)
+// =====================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const searchDropdown = document.getElementById('searchDropdown');
+
+    if (!searchInput || !searchDropdown) return;
+
+    // Escuta o evento de digitação na barra de busca
+    searchInput.addEventListener('input', (e) => {
+        const termo = e.target.value.toLowerCase().trim();
+
+        // Se o campo estiver vazio, esconde a lista
+        if (termo === '') {
+            searchDropdown.style.display = 'none';
+            searchDropdown.innerHTML = '';
+            return;
+        }
+
+        // Pega todos os cards de produtos que estão na página
+        const cards = document.querySelectorAll('.card');
+        let resultados = [];
+
+        cards.forEach(card => {
+            const h3 = card.querySelector('h3');
+            const strong = card.querySelector('strong');
+            const img = card.querySelector('.productImage img');
+
+            if (h3) {
+                const nomeProduto = h3.innerText;
+                const precoProduto = strong ? strong.innerText : '';
+                const imgSrc = img ? img.getAttribute('src') : '';
+
+                // Verifica se o nome do produto contém o texto digitado
+                if (nomeProduto.toLowerCase().includes(termo)) {
+                    resultados.push({
+                        nome: nomeProduto,
+                        preco: precoProduto,
+                        imagem: imgSrc,
+                        elementoCard: card
+                    });
+                }
+            }
+        });
+
+        // Renderiza os resultados no dropdown
+        exibirResultadosPesquisa(resultados, searchDropdown);
+    });
+
+    // Esconde o dropdown se clicar fora da barra de busca
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.style.display = 'none';
+        }
+    });
+});
+
+// Renderizar itens encontrados no Dropdown
+function exibirResultadosPesquisa(resultados, dropdown) {
+    if (resultados.length === 0) {
+        dropdown.innerHTML = '<div class="search-no-results">Nenhum produto encontrado</div>';
+        dropdown.style.display = 'block';
+        return;
+    }
+
+    dropdown.innerHTML = '';
+
+    resultados.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'search-result-item';
+        div.innerHTML = `
+            <img src="${item.imagem}" alt="${item.nome}">
+            <div>
+                <strong>${item.nome}</strong>
+                <span>${item.preco}</span>
+            </div>
+        `;
+
+        // Ao clicar no resultado, rola a página até o card do produto
+        div.addEventListener('click', () => {
+            dropdown.style.display = 'none';
+            document.getElementById('searchInput').value = '';
+            item.elementoCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Efeito visual de destaque no card selecionado
+            item.elementoCard.style.outline = '2px solid #ff0033';
+            setTimeout(() => {
+                item.elementoCard.style.outline = 'none';
+            }, 2000);
+        });
+
+        dropdown.appendChild(div);
+    });
+
+    dropdown.style.display = 'block';
+}
